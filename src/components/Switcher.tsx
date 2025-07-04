@@ -1,22 +1,29 @@
 import gsap from "gsap";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { IconType } from "react-icons";
-import { FaBook } from "react-icons/fa";
-import { FaPlusCircle } from "react-icons/fa";
-import { FaTrophy } from "react-icons/fa";
 
-const Switcher = () => {
-  const [activeSwitch, setActiveSwitch] = useState<string>("recipes");
+type SwitcherProps = {
+  elements: {
+    id: number;
+    title: string;
+    subTitle: string;
+    isActive: boolean;
+    icon: IconType;
+  }[];
+  onSwitch: (id: number) => void;
+};
+
+const Switcher: React.FC<SwitcherProps> = ({ elements, onSwitch }) => {
   const bgSwitch = useRef(null);
 
   useEffect(() => {
     let yValue;
 
-    if (activeSwitch === "recipes") {
+    if (elements[0].isActive) {
       yValue = 0;
-    } else if (activeSwitch === "classification") {
-      yValue = "4.5rem"; // ad esempio 4.5rem in px
-    } else if (activeSwitch === "plus") {
+    } else if (elements[1].isActive) {
+      yValue = "4.5rem";
+    } else if (elements[2].isActive) {
       yValue = "9rem";
     } else {
       yValue = 0;
@@ -28,33 +35,18 @@ const Switcher = () => {
         ease: "power3.inOut",
       });
     }
-  }, [activeSwitch]);
-
-  const icons: { title: string; Icon: IconType }[] = [
-    {
-      title: "recipes",
-      Icon: FaBook,
-    },
-    {
-      title: "classification",
-      Icon: FaTrophy,
-    },
-    {
-      title: "plus",
-      Icon: FaPlusCircle,
-    },
-  ];
+  }, [elements]);
 
   return (
     <div className="border overflow-hidden flex flex-col absolute hover:bg-gray-500/ top-1/2 right-0 -translate-y-1/2 rounded-4xl">
-      {icons.map((item, index) => {
+      {elements.map((element) => {
         return (
           <div
             className={`w-18 h-18 transition-all duration-300 flex items-center justify-center cursor-pointer hover:text-black`}
-            key={index}
-            onClick={() => setActiveSwitch(item.title)}
+            key={element.id}
+            onClick={() => onSwitch(element.id)}
           >
-            <item.Icon />
+            <element.icon />
           </div>
         );
       })}
