@@ -19,8 +19,8 @@ export const titleHome = (
   });
 
   tl.to(ref, {
-    y: -340,
-    x: -400,
+    top: 30,
+    left: 30,
     duration: 1.5,
     fontSize: 50,
     ease: "power2.out",

@@ -1,19 +1,22 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { scaleUp, titleHome } from "@/animation/transition";
-import Switcher from "@/components/Switcher";
+import { scaleUp, titleHome } from "../animation/transition";
+import Switcher from "../components/Switcher";
 import { FaBook } from "react-icons/fa";
 import { FaPlusCircle } from "react-icons/fa";
 import { FaTrophy } from "react-icons/fa";
 import { IconType } from "react-icons";
-import Soma from "../assets/soma-kun.png";
-import Image from "next/image";
+import { IoIosArrowForward } from "react-icons/io";
+import Link from "next/link";
+// import Soma from "../assets/soma-kun.png";
+// import Image from "next/image";
 
 type SwitcherItem = {
   id: number;
   title: string;
   subTitle: string;
   isActive: boolean;
+  path: string;
   icon: IconType;
 };
 
@@ -23,6 +26,7 @@ const initialSwitcherElements: SwitcherItem[] = [
     title: "Tutte le ricette",
     subTitle: "Qui troverai tutte le ricette accumulate nel corso del tempo.",
     isActive: true,
+    path: "/",
     icon: FaBook,
   },
   {
@@ -31,6 +35,7 @@ const initialSwitcherElements: SwitcherItem[] = [
     subTitle:
       "Qui potrai creare nuove ricette da aggiungere al tuo ricettario.",
     isActive: false,
+    path: "",
     icon: FaPlusCircle,
   },
   {
@@ -39,6 +44,7 @@ const initialSwitcherElements: SwitcherItem[] = [
     subTitle:
       "Qui vedrai la classifica delle ricette migliori votate dagli utenti.",
     isActive: false,
+    path: "",
     icon: FaTrophy,
   },
 ];
@@ -61,7 +67,7 @@ export default function Home() {
     if (introEnd && menuRef.current) {
       scaleUp(menuRef.current); // ✅ ora è presente nel DOM
     }
-  }, [introEnd]);
+  }, [introEnd, switcherElements]);
 
   const handleSwitch = (id: number) => {
     setSwitcherElements((prev) =>
@@ -82,22 +88,30 @@ export default function Home() {
       {introEnd && (
         <div className="flex items-center justify-around">
           {/* Text and subtext */}
-          <div ref={menuRef} className="border">
+          <div ref={menuRef} className="border rounded-4xl p-10 me-20">
             {switcherElements.map((el) => {
               return (
                 <div key={el.id}>
                   {el.isActive && (
-                    <div className="flex ">
+                    <div className="flex items-center">
                       {/* Title and Subtitle  */}
-                      <div>
-                        <h2 className="text-7xl">{el.title}</h2>
-                        <h4 className="text-2xl">{el.subTitle}</h4>
+                      <div className="flex gap-3 flex-col">
+                        <h2 className="text-7xl font-bold">{el.title}</h2>
+                        <h4 className="text-2xl italic">{el.subTitle}</h4>
+                        <div>
+                          <Link href={'/recipes'}>
+                            <button className="justify-center flex gap-2 items-center cursor-pointer border py-2 px-4 rounded-4xl hover:bg-white hover:text-[#c6aa93] transition-all duration-300">
+                              Scopri
+                              <IoIosArrowForward />
+                            </button>
+                          </Link>
+                        </div>
                       </div>
 
                       {/* Image  */}
-                      <div>
-                        <Image src={Soma} alt="Soma" className="w-20" />
-                      </div>
+                      {/* <div>
+                        <Image src={Soma} alt="Soma" className="w-96" />
+                      </div> */}
                     </div>
                   )}
                 </div>

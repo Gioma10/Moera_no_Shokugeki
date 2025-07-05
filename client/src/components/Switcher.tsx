@@ -2,12 +2,14 @@ import gsap from "gsap";
 import { useEffect, useRef } from "react";
 import { IconType } from "react-icons";
 
+
 type SwitcherProps = {
   elements: {
     id: number;
     title: string;
     subTitle: string;
     isActive: boolean;
+    path: string;
     icon: IconType;
   }[];
   onSwitch: (id: number) => void;
@@ -42,7 +44,7 @@ const Switcher: React.FC<SwitcherProps> = ({ elements, onSwitch }) => {
       {elements.map((element) => {
         return (
           <div
-            className={`w-18 h-18 transition-all duration-300 flex items-center justify-center cursor-pointer hover:text-black`}
+            className={`w-18 h-18 transition-all duration-300 flex items-center justify-center cursor-pointer hover:text-[#a5c8d6]`}
             key={element.id}
             onClick={() => onSwitch(element.id)}
           >
@@ -52,7 +54,7 @@ const Switcher: React.FC<SwitcherProps> = ({ elements, onSwitch }) => {
       })}
       <div
         ref={bgSwitch}
-        className="absolute top-0 w-18 h-18 left-0 bg-[#fab18a] -z-20"
+        className="absolute top-0 w-18 h-18 left-0 bg-[#a5d6b9] -z-20"
       ></div>
     </div>
   );
