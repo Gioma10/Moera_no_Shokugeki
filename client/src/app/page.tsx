@@ -26,7 +26,7 @@ const initialSwitcherElements: SwitcherItem[] = [
     title: "Tutte le ricette",
     subTitle: "Qui troverai tutte le ricette accumulate nel corso del tempo.",
     isActive: true,
-    path: "/",
+    path: "/recipes",
     icon: FaBook,
   },
   {
@@ -35,7 +35,7 @@ const initialSwitcherElements: SwitcherItem[] = [
     subTitle:
       "Qui potrai creare nuove ricette da aggiungere al tuo ricettario.",
     isActive: false,
-    path: "",
+    path: "/create-recipe",
     icon: FaPlusCircle,
   },
   {
@@ -44,7 +44,7 @@ const initialSwitcherElements: SwitcherItem[] = [
     subTitle:
       "Qui vedrai la classifica delle ricette migliori votate dagli utenti.",
     isActive: false,
-    path: "",
+    path: "*",
     icon: FaTrophy,
   },
 ];
@@ -99,7 +99,7 @@ export default function Home() {
                         <h2 className="text-7xl font-bold">{el.title}</h2>
                         <h4 className="text-2xl italic">{el.subTitle}</h4>
                         <div>
-                          <Link href={'/recipes'}>
+                          <Link href={el.path}>
                             <button className="justify-center flex gap-2 items-center cursor-pointer border py-2 px-4 rounded-4xl hover:bg-white hover:text-[#c6aa93] transition-all duration-300">
                               Scopri
                               <IoIosArrowForward />
