@@ -1,26 +1,10 @@
 "use client";
+import FormVote from "../../components/FormVote";
 import Input from "../../components/Input";
-import Image from "next/image";
-import SomaOn from "../../assets/soma-kun-on.png";
-import SomaOff from "../../assets/soma-kun-off.png";
-import { useState } from "react";
+
 
 const CreateRecipe = () => {
-  const [votes, setVotes] = useState(() => Array(5).fill(SomaOff));
 
-  const handleSelectVote = (i: number) => {
-    setVotes((prevVotes) => {
-      const updateVotes = prevVotes.map((el, index) => {
-        if (index <= i) {
-          return el === SomaOn ? SomaOff : SomaOn;
-        } else {
-          return el;
-        }
-      });
-      console.log(updateVotes);
-      return updateVotes;
-    });
-  };
   return (
     <div className="h-screen flex justify-center flex-col items-center gap-5">
       <h2 className="text-5xl">Crea una ricetta</h2>
@@ -36,19 +20,7 @@ const CreateRecipe = () => {
               alt="Recipe photo"
               className=" rounded-2xl"
             />
-            <div className="flex gap-2 max-w-10">
-              {votes.map((item, index) => {
-                return (
-                  <Image
-                    key={index}
-                    src={item}
-                    alt="votes images"
-                    className="cursor-pointer"
-                    onClick={() => handleSelectVote(index)}
-                  ></Image>
-                );
-              })}
-            </div>
+            <FormVote />
           </div>
         </div>
       </form>
