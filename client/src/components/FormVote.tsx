@@ -20,14 +20,14 @@ const FormVote = () => {
     });
   };
   return (
-    <div className="flex gap-2 max-w-10">
+    <div className="gap-2 grid grid-cols-5">
       {votes.map((item, index) => {
         return (
           <Image
             key={index}
             src={item}
             alt="votes images"
-            className="cursor-pointer"
+            className="cursor-pointer max-w-14"
             onClick={() => handleSelectVote(index)}
           ></Image>
         );
