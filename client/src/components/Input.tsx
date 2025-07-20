@@ -1,16 +1,33 @@
 "use client";
 
+import { UseFormRegister } from "react-hook-form";
 import { RiImageAddFill } from "react-icons/ri";
 import { useState } from "react";
 import Image from "next/image";
+
+interface RecipeFormData {
+  title: string;
+  category: string;
+  ingredients: string;
+  instructions: string;
+  image: FileList;
+  rating: number;
+}
 
 interface InputProps {
   type?: string;
   placeholder?: string;
   input?: string;
+  register?: UseFormRegister<RecipeFormData>;
+  name?: keyof RecipeFormData;
 }
 
-const Input: React.FC<InputProps> = ({ input, ...InputProps }) => {
+const Input: React.FC<InputProps> = ({
+  input,
+  register,
+  name,
+  ...InputProps
+}) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,15 +72,10 @@ const Input: React.FC<InputProps> = ({ input, ...InputProps }) => {
       {/* Inserire il procedimento  */}
       {input === "textarea" && <textarea className={generalClass}></textarea>}
 
-      {/* Selezionare la tipologia e gli ingredienti */}
+      {/* Selezionare la tipologia */}
       {input === "select" && (
-        <select
-          className={generalClass}
-          name="typeRecipe"
-          id="typeRecipe"
-          defaultValue="Scegli la tipologia"
-        >
-          <option value="scegli la tipologia" className="text-gray-500" disabled>
+        <select className={generalClass} name="typeRecipe" id="typeRecipe">
+          <option hidden className="text-amber-300" value="">
             Scegli la tipologia
           </option>
           <option value="primo">Primo</option>
@@ -73,7 +85,13 @@ const Input: React.FC<InputProps> = ({ input, ...InputProps }) => {
       )}
 
       {/* Inserire tutti gli input normali  */}
-      {input === "input" && <input {...InputProps} className={generalClass} />}
+      {input === "input" && (
+        <input
+          {...InputProps}
+          className={generalClass}
+          {...(register && name ? register(name) : {})}
+        />
+      )}
     </>
   );
 };

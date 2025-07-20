@@ -21,13 +21,14 @@ const FormVote = () => {
   };
   return (
     <div className="gap-2 grid grid-cols-5">
+        <h5 className="text-black col-span-5">Vota il piatto:</h5>
       {votes.map((item, index) => {
         return (
           <Image
             key={index}
             src={item}
             alt="votes images"
-            className="cursor-pointer max-w-14"
+            className="cursor-pointer max-w-14 "
             onClick={() => handleSelectVote(index)}
           ></Image>
         );
