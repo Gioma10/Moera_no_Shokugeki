@@ -11,8 +11,14 @@ import { RecipeFormData } from "../../types/recipes";
 
 const CreateRecipe = () => {
   const [step, setStep] = useState<number>(1);
-  const { register, handleSubmit, getValues, setValue, formState: {errors} } =
-    useForm<RecipeFormData>();
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    setValue,
+    formState: { errors },
+    trigger,
+  } = useForm<RecipeFormData>();
   const [ingredients, setIngredients] = useState<string[]>([]);
 
   const handleAddIngredients = () => {
@@ -23,8 +29,17 @@ const CreateRecipe = () => {
     });
   };
 
-  const nextStep = () => {
-    setStep((prevStep) => prevStep + 1);
+  const nextStep = async () => {
+    const isValid = await trigger([
+      "title",
+      "category",
+      "ingredients",
+      "image",
+      "rating",
+    ]);
+    if (isValid) {
+      setStep((prevStep) => prevStep + 1);
+    }
   };
 
   const backStep = () => {
@@ -44,7 +59,7 @@ const CreateRecipe = () => {
       >
         {step === 1 && (
           <div className="flex items-center gap-10">
-            <div className="flex flex-col gap-5 border border-black h-full overflow-hidden">
+            <div className="flex flex-col gap-5 h-full">
               {/* Title and type of food */}
               <div className="flex flex-col gap-2">
                 <Input
@@ -54,7 +69,7 @@ const CreateRecipe = () => {
                   register={register}
                   name="title"
                   errors={errors}
-                  validation={{ required: 'Title is required' }}
+                  validation={{ required: "Title is required" }}
                 />
                 <Input input="select" register={register} name="category" />
               </div>

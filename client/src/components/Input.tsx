@@ -5,6 +5,7 @@ import { RiImageAddFill } from "react-icons/ri";
 import { useState } from "react";
 import Image from "next/image";
 import { RecipeFormData } from "../types/recipes";
+import { motion } from "framer-motion";
 
 interface InputProps {
   type?: string;
@@ -37,8 +38,9 @@ const Input: React.FC<InputProps> = ({
 
   const errorMessage = errors && name && errors[name]?.message;
 
-  const generalClass =
-    "rounded-4xl border border-gray-800 focus:outline-none text-black px-5 py-3 text-xl";
+  const generalClass = `rounded-4xl border focus:outline-none  px-5 py-3 text-xl ${
+    errorMessage ? "border-red-700 text-red-700" : "border-gray-800 text-black"
+  }`;
   return (
     <>
       {/* Inserire l'immagine  */}
@@ -96,14 +98,21 @@ const Input: React.FC<InputProps> = ({
 
       {/* Inserire tutti gli input normali  */}
       {input === "input" && (
-        <>
-          <input
+        <div className="flex flex-col gap-1 justify-center relative ">
+          <motion.input
+            animate={
+              errorMessage
+                ? {
+                    x: [0, -10, 10, -10, 10, 0],
+                    transition: { duration: 0.4 },
+                  }
+                : undefined
+            }
             {...InputProps}
             className={generalClass}
             {...(register && name ? register(name, validation) : {})}
           />
-          {errorMessage && <span> {errorMessage.toString()}</span>}
-        </>
+        </div>
       )}
     </>
   );
