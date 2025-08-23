@@ -4,7 +4,7 @@ import { UseFormRegister, FieldErrors, RegisterOptions } from "react-hook-form";
 import { RiImageAddFill } from "react-icons/ri";
 import { useState } from "react";
 import Image from "next/image";
-import { RecipeFormData } from "../types/recipes";
+import { RecipeFormData } from "../../types/recipes";
 import { motion } from "framer-motion";
 
 interface InputProps {
@@ -15,7 +15,7 @@ interface InputProps {
   name?: keyof RecipeFormData;
   rows?: number;
   errors?: FieldErrors<RecipeFormData>;
-  validation?: RegisterOptions<RecipeFormData, keyof RecipeFormData>; // regole di validazione dinamiche
+  rules?: RegisterOptions<RecipeFormData, keyof RecipeFormData>;
 }
 
 const Input: React.FC<InputProps> = ({
@@ -23,7 +23,6 @@ const Input: React.FC<InputProps> = ({
   register,
   name,
   errors,
-  validation,
   ...InputProps
 }) => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -45,7 +44,9 @@ const Input: React.FC<InputProps> = ({
     <>
       {/* Inserire l'immagine  */}
       {input === "file" && (
-        <div className="relative w-80 cursor-pointer h-56 rounded-4xl border border-gray-800 focus:outline-none text-black text-xl">
+        <motion.div
+          className={`relative w-80 cursor-pointer h-56 rounded-4xl border focus:outline-none text-black text-xl`}
+        >
           <label
             htmlFor="imageUpload"
             className="absolute w-full h-full flex justify-center items-center cursor-pointer"
@@ -58,7 +59,7 @@ const Input: React.FC<InputProps> = ({
                 className="object-cover rounded-4xl"
               />
             ) : (
-              <RiImageAddFill size={50} className="text-gray-500 border" />
+              <RiImageAddFill size={50} />
             )}
           </label>
           <input
@@ -69,48 +70,44 @@ const Input: React.FC<InputProps> = ({
             className="w-full h-full hidden"
             onChange={handleImageChange}
           />
-        </div>
+        </motion.div>
       )}
       {/* Inserire il procedimento  */}
       {input === "textarea" && (
-        <textarea
-          {...InputProps}
-          {...(register && name ? register(name) : {})}
-          className={generalClass}
-        ></textarea>
+        <motion.div>
+          <textarea
+            {...InputProps}
+            {...(register && name ? register(name) : {})}
+            className={generalClass}
+          ></textarea>
+        </motion.div>
       )}
 
       {/* Selezionare la tipologia */}
       {input === "select" && (
-        <select
-          className={generalClass}
-          id="typeRecipe"
-          {...(register && name ? register(name) : {})}
-        >
-          <option hidden className="text-amber-300" value="">
-            Scegli la tipologia
-          </option>
-          <option value="primo">Primo</option>
-          <option value="secondo">Secondo</option>
-          <option value="dessert">Dessert</option>
-        </select>
+        <motion.div className={generalClass}>
+          <select
+            className="focus:outline-none cursor-pointer"
+            id="typeRecipe"
+            {...(register && name ? register(name) : {})}
+          >
+            <option hidden className="text-amber-300" value="">
+              Scegli la tipologia
+            </option>
+            <option value="primo">Primo</option>
+            <option value="secondo">Secondo</option>
+            <option value="dessert">Dessert</option>
+          </select>
+        </motion.div>
       )}
 
       {/* Inserire tutti gli input normali  */}
       {input === "input" && (
         <div className="flex flex-col gap-1 justify-center relative ">
           <motion.input
-            animate={
-              errorMessage
-                ? {
-                    x: [0, -10, 10, -10, 10, 0],
-                    transition: { duration: 0.4 },
-                  }
-                : undefined
-            }
             {...InputProps}
             className={generalClass}
-            {...(register && name ? register(name, validation) : {})}
+            {...(register && name ? register(name) : {})}
           />
         </div>
       )}

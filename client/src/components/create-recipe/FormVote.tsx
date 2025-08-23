@@ -4,7 +4,7 @@ import { useState } from "react";
 import SomaOn from "../assets/soma-kun-on.png";
 import SomaOff from "../assets/soma-kun-off.png";
 import { UseFormRegister, UseFormSetValue } from "react-hook-form";
-import { RecipeFormData } from "../types/recipes";
+import { RecipeFormData } from "../../types/recipes";
 
 interface FormVoteProps {
   register: UseFormRegister<RecipeFormData>;
