@@ -10,6 +10,8 @@
 // import { RecipeFormData } from "../../types/recipes";
 // import { shakeError } from "../../animation/transition";
 
+import Form from "../../components/create-recipe/Form";
+
 // const CreateRecipe = () => {
 //   const [step, setStep] = useState<number>(1);
 //   const {
@@ -212,8 +214,8 @@
 const CreateRecipe: React.FC = () => {
   return (
     <div className=" flex items-center justify-center h-screen">
-      <div className="border rounded-4xl p-2">
-        hello
+      <div>
+        <Form />
       </div>
     </div>
   );
