@@ -37,5 +37,7 @@ export const scaleUp = (ref: HTMLDivElement | null) => {
 
 export const shakeError = () => ({
   x: [0, -10, 10, -10, 10, 0],
-  transition: { duration: 0.4 }
+  transition: { duration: 0.4 },
+  border: "1px solid red",
+  color: 'red'
 });
