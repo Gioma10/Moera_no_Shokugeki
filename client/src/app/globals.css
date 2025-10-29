@@ -9,14 +9,6 @@
   src: url("../fonts/Crispy_Food.ttf");
 }
 
-body {
-  position: relative;
-  margin: 0px 30px;
-  background-color: #d6b9a6;
-  color: whitesmoke;
-  font-family: "context";
-}
-
 h1 {
   font-family: "title";
 }
