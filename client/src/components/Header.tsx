@@ -1,6 +1,6 @@
 export const Header = () => {
   return (
-    <nav className="flex items-center justify-center py-4">
+    <nav className="py-4 fixed text-center w-full">
       <h1 className="text-5xl">Moera no Shokugeki</h1>
     </nav>
   );
