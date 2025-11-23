@@ -43,12 +43,15 @@ const CreateRecipe = () => {
             className="flex flex-col gap-5"
           >
             <FormField
-              name="title"
+              name="image"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="file" placeholder="title" {...field} />
+                    <Input
+                      type="file"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -65,7 +68,7 @@ const CreateRecipe = () => {
               )}
             />
             <FormField
-              name="title"
+              name="description"
               control={form.control}
               render={({ field }) => (
                 <FormItem>
@@ -76,7 +79,7 @@ const CreateRecipe = () => {
               )}
             />
 
-            <Button>Create</Button>
+            <Button type="submit">Create</Button>
           </form>
         </Form>
       </Card>
