@@ -14,6 +14,21 @@ const PORT = 8080;
 //   res.json({ message: "Hello" });
 // });
 
+// Get Recipes
+app.get("/api/recipes", async (req, res) => {
+  try {
+    const querySnapshot= await db.collection("recipes").get();
+    
+    const recipes = querySnapshot.docs.map((doc)=> {
+      return {id: doc.id, ...doc.data()}
+    })
+    // console.log(recipes);
+    res.status(200).json(recipes);
+  } catch (error) {
+    res.status(500).json({ error: "Error on recipes visualization" });
+  }
+});
+
 // Create a recipe
 app.post("/api/recipes", async (req, res) => {
   try {
@@ -21,7 +36,7 @@ app.post("/api/recipes", async (req, res) => {
     const docRef = await db.collection("recipes").add(newRecipe);
     res.status(201).json({ id: docRef.id, ...newRecipe });
   } catch (error) {
-    res.status(500).json({ error: "Errore nella creazione della ricetta" });
+    res.status(500).json({ error: "Error on recipe creation" });
   }
 });
 

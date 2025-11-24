@@ -1,5 +1,11 @@
 import { RecipeFormData } from "@/types/recipes";
 
+// Get recipes
+
+export const getRecipes = async ()=>{
+  
+}
+
 // Create a recipe
 export const createRecipe = async (newRecipe: RecipeFormData) => {
   const res = await fetch("http://localhost:8080/api/recipes", {

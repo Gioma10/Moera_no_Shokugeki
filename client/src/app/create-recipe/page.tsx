@@ -32,7 +32,7 @@ const CreateRecipe = () => {
     },
   });
 
-  const { mutate: create, isPending } = useMutation({
+  const { mutate: create } = useMutation({
     mutationFn: createRecipe,
     onSuccess: (data) => {
       console.log("Ricetta creata con successo!", data);
