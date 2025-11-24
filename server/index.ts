@@ -1,13 +1,13 @@
 import express from "express";
 import cors from "cors";
-import { db } from "./firebase.js";
+import { db } from "./firebase.ts";
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-const PORT = "8080";
+const PORT = 8080;
 
 // Server Test
 // app.get("/api/home", (req, res) => {

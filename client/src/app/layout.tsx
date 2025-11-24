@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "../components/Header";
+import { ReactQueryProvider } from "@/components/ReactQueryProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,31 +24,33 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // DEBUG: intercetto chiamate a localStorage sul server
+  if (typeof window === "undefined") {
+    // Evita crash sostituendo localStorage sul server
+    // e stampa nel terminale quando viene usato
+    (globalThis as any).localStorage = {
+      getItem: (...args: any[]) => {
+        console.trace("⛔ getItem chiamato sul SERVER", args);
+        return null;
+      },
+      setItem: (...args: any[]) => {
+        console.trace("⛔ setItem chiamato sul SERVER", args);
+      },
+      removeItem: (...args: any[]) => {
+        console.trace("⛔ removeItem chiamato sul SERVER", args);
+      },
+    };
+  }
 
- // DEBUG: intercetto chiamate a localStorage sul server
-if (typeof window === "undefined") {
-  // Evita crash sostituendo localStorage sul server
-  // e stampa nel terminale quando viene usato
-  (globalThis as any).localStorage = {
-    getItem: (...args: any[]) => {
-      console.trace("⛔ getItem chiamato sul SERVER", args);
-      return null;
-    },
-    setItem: (...args: any[]) => {
-      console.trace("⛔ setItem chiamato sul SERVER", args);
-    },
-    removeItem: (...args: any[]) => {
-      console.trace("⛔ removeItem chiamato sul SERVER", args);
-    }
-  };
-}
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Header />
-        <main>{children}</main>
+        <ReactQueryProvider>
+          <main>{children}</main>
+        </ReactQueryProvider>
       </body>
     </html>
   );

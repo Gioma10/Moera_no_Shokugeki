@@ -7,6 +7,8 @@ import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useMutation } from "@tanstack/react-query";
+import { createRecipe } from "@/api/recipes";
 
 const RecipeSchema = z.object({
   image: z.string().url("Inserisci un URL valido"),
@@ -30,8 +32,20 @@ const CreateRecipe = () => {
     },
   });
 
+  const { mutate: create, isPending } = useMutation({
+    mutationFn: createRecipe,
+    onSuccess: (data) => {
+      console.log("Ricetta creata con successo!", data);
+      form.reset();
+    },
+    onError: (error: any) => {
+      console.error("Errore:", error.message);
+    },
+  });
+
   const onSubmit = (data: z.infer<typeof RecipeSchema>) => {
     console.log("Here the data", data);
+    create(data)
   };
 
   return (
@@ -48,10 +62,7 @@ const CreateRecipe = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input
-                      type="file"
-                      {...field}
-                    />
+                    <Input type="file" {...field} />
                   </FormControl>
                 </FormItem>
               )}
