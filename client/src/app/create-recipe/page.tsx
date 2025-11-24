@@ -32,7 +32,7 @@ const CreateRecipe = () => {
     },
   });
 
-  const { mutate: create } = useMutation({
+  const { mutate: onCreate } = useMutation({
     mutationFn: createRecipe,
     onSuccess: (data) => {
       console.log("Ricetta creata con successo!", data);
@@ -45,7 +45,7 @@ const CreateRecipe = () => {
 
   const onSubmit = (data: z.infer<typeof RecipeSchema>) => {
     console.log("Here the data", data);
-    create(data)
+    onCreate(data)
   };
 
   return (

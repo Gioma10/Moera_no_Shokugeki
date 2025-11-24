@@ -1,5 +1,6 @@
 export interface RecipeFormData {
-  image: string;
+  id?: string;
+  image: File;
   title: string;
   description: string;
   // category: string;

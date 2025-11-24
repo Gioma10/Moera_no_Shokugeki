@@ -21,9 +21,9 @@ export default function Home() {
           <div>
             {recipesQueryResult.data?.map((recipe) => {
               return (
-                <Card key={recipe.title}>
+                <Card key={recipe.id}>
                   <CardHeader className="w-full h-12">
-                    <Image src={recipe.image ?? ''} alt="Recipe Image" fill/>
+                    {recipe.image && <Image src={recipe.image} alt="Recipe Image" fill/>}
                   </CardHeader>
                   <CardContent className="">
                     <h3>{recipe.title}</h3>
