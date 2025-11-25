@@ -39,7 +39,7 @@ const CreateRecipe = () => {
     onSuccess: (data) => {
       console.log("Ricetta creata con successo!", data);
       form.reset();
-      router.push("/");
+      router.push("/recipes");
     },
     onError: (error: any) => {
       console.error("Errore:", error.message);
