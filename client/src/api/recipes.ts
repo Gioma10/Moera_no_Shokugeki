@@ -11,11 +11,10 @@ export const getRecipes = async (): Promise<RecipeFormData[]>=>{
 }
 
 // Create a recipe
-export const createRecipe = async (newRecipe: RecipeFormData) => {
+export const createRecipe = async (newRecipe: FormData) => {
   const res = await fetch(`${localurl}/api/recipes`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(newRecipe),
+    body: newRecipe,
   });
   if (!res.ok) throw new Error("Errore on recipe creation");
   return res.json();

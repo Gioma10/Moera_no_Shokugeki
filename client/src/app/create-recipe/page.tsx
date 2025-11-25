@@ -9,9 +9,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { createRecipe } from "@/api/recipes";
+import { RecipeFormData } from "@/types/recipes";
 
 const RecipeSchema = z.object({
-  image: z.string().url("Inserisci un URL valido"),
+  image: z.file(),
   title: z.string(),
   description: z.string(),
   // category: z.string(),
@@ -26,7 +27,7 @@ const CreateRecipe = () => {
   const form = useForm({
     resolver: zodResolver(RecipeSchema),
     defaultValues: {
-      image: "",
+      image: undefined,
       title: "",
       description: "",
     },
@@ -45,7 +46,12 @@ const CreateRecipe = () => {
 
   const onSubmit = (data: z.infer<typeof RecipeSchema>) => {
     console.log("Here the data", data);
-    onCreate(data)
+
+    const payload = new FormData();
+    payload.append("image", data.image);
+    payload.append("title", data.title);
+    payload.append("description", data.description);
+    onCreate(payload);
   };
 
   return (
@@ -62,7 +68,13 @@ const CreateRecipe = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input type="file" {...field} />
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) field.onChange(file);
+                      }}
+                    />
                   </FormControl>
                 </FormItem>
               )}
