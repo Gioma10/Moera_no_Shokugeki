@@ -18,12 +18,12 @@ export default function Home() {
         .with({ status: "error" }, () => <div>Error...</div>)
         .with({ status: "pending" }, () => <div>Skeleton...</div>)
         .with({ status: "success" }, () => (
-          <div>
+          <div className="flex gap-2">
             {recipesQueryResult.data?.map((recipe) => {
               return (
                 <Card key={recipe.id}>
-                  <CardHeader className="w-full h-12">
-                    {recipe.image && <Image src='' alt="Recipe Image" fill/>}
+                  <CardHeader className="w-full h-40 relative">
+                    {recipe.image && <Image src={recipe.image} alt="Recipe Image" fill/>}
                   </CardHeader>
                   <CardContent className="">
                     <h3>{recipe.title}</h3>

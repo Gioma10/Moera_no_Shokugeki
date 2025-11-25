@@ -1,9 +1,14 @@
-import { RecipeFormData } from "@/types/recipes";
-
 const localurl = "http://localhost:8080";
 
+export type RecipeFromServer = {
+  id: string;
+  title: string;
+  description: string;
+  image: string; // URL di Cloudinary
+}
+
 // Get recipes
-export const getRecipes = async (): Promise<RecipeFormData[]> => {
+export const getRecipes = async (): Promise<RecipeFromServer[]> => {
   const res = await fetch(`${localurl}/api/recipes`, {
     method: "GET",
   });
