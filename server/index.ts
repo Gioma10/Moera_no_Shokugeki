@@ -1,7 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { db } from "./firebase.ts";
-import multer from "multer"
+import multer from "multer";
+import cloudinary from "./cloudinaryConfig.ts";
 
 const app = express();
 
@@ -18,11 +19,11 @@ const PORT = 8080;
 // Get Recipes
 app.get("/api/recipes", async (req, res) => {
   try {
-    const querySnapshot= await db.collection("recipes").get();
-    
-    const recipes = querySnapshot.docs.map((doc)=> {
-      return {id: doc.id, ...doc.data()}
-    })
+    const querySnapshot = await db.collection("recipes").get();
+
+    const recipes = querySnapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
     // console.log(recipes);
     res.status(200).json(recipes);
   } catch (error) {
@@ -34,12 +35,32 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Create a recipe
-app.post("/api/recipes",upload.single("image"), async (req, res) => {
+app.post("/api/recipes", upload.single("image"), async (req, res) => {
   try {
-    const img = req.file
-    const newRecipe = req.body;
+    const file = req.file;
+    const restOfData = req.body;
+
+    if (!file) return res.status(400).json({ error: "Missing file" });
+
+     // upload su Cloudinary
+     const result = await new Promise<any>((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: "recipes" },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      stream.end(file.buffer);
+    });
+
+    const newRecipe = {
+      image: result.secure_url,
+      ...restOfData
+    }
+
     const docRef = await db.collection("recipes").add(newRecipe);
-    res.status(201).json({ id: docRef.id, image: img, ...newRecipe });
+    res.status(201).json({ id: docRef.id, ...newRecipe });
   } catch (error) {
     res.status(500).json({ error: "Error on recipe creation" });
   }
