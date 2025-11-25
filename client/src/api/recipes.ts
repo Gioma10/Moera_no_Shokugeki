@@ -1,14 +1,15 @@
 import { RecipeFormData } from "@/types/recipes";
-const localurl = "http://localhost:8080"
+
+const localurl = "http://localhost:8080";
 
 // Get recipes
-export const getRecipes = async (): Promise<RecipeFormData[]>=>{
+export const getRecipes = async (): Promise<RecipeFormData[]> => {
   const res = await fetch(`${localurl}/api/recipes`, {
     method: "GET",
-  })
+  });
   if (!res.ok) throw new Error("Errore on recipes visualization");
-  return res.json()
-}
+  return res.json();
+};
 
 // Create a recipe
 export const createRecipe = async (newRecipe: FormData) => {
@@ -17,5 +18,6 @@ export const createRecipe = async (newRecipe: FormData) => {
     body: newRecipe,
   });
   if (!res.ok) throw new Error("Errore on recipe creation");
+
   return res.json();
 };

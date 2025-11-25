@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { createRecipe } from "@/api/recipes";
-import { RecipeFormData } from "@/types/recipes";
+import { useRouter } from "next/navigation";
 
 const RecipeSchema = z.object({
   image: z.file(),
@@ -32,12 +32,14 @@ const CreateRecipe = () => {
       description: "",
     },
   });
+  const router = useRouter();
 
   const { mutate: onCreate } = useMutation({
     mutationFn: createRecipe,
     onSuccess: (data) => {
       console.log("Ricetta creata con successo!", data);
       form.reset();
+      router.push("/");
     },
     onError: (error: any) => {
       console.error("Errore:", error.message);
