@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import { db } from "./firebase.ts";
+import multer from "multer"
 
 const app = express();
 
@@ -29,12 +30,16 @@ app.get("/api/recipes", async (req, res) => {
   }
 });
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+
 // Create a recipe
-app.post("/api/recipes", async (req, res) => {
+app.post("/api/recipes",upload.single("image"), async (req, res) => {
   try {
+    const img = req.file
     const newRecipe = req.body;
     const docRef = await db.collection("recipes").add(newRecipe);
-    res.status(201).json({ id: docRef.id, ...newRecipe });
+    res.status(201).json({ id: docRef.id, image: img, ...newRecipe });
   } catch (error) {
     res.status(500).json({ error: "Error on recipe creation" });
   }

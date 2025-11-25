@@ -23,7 +23,7 @@ export default function Home() {
               return (
                 <Card key={recipe.id}>
                   <CardHeader className="w-full h-12">
-                    {recipe.image && <Image src={recipe.image} alt="Recipe Image" fill/>}
+                    {recipe.image && <Image src='' alt="Recipe Image" fill/>}
                   </CardHeader>
                   <CardContent className="">
                     <h3>{recipe.title}</h3>
