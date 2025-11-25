@@ -21,13 +21,22 @@ export default function Home() {
           <div className="flex gap-2">
             {recipesQueryResult.data?.map((recipe) => {
               return (
-                <Card key={recipe.id}>
-                  <CardHeader className="w-full h-40 relative">
-                    {recipe.image && <Image src={recipe.image} alt="Recipe Image" fill/>}
+                <Card key={recipe.id} className="w-80 h-96">
+                  <CardHeader>
+                    <div className="w-full h-40 relative">
+                      {recipe.image && (
+                        <Image src={recipe.image} alt="Recipe Image" fill />
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold">
+                      {recipe.title.toUpperCase()}
+                    </h3>
                   </CardHeader>
                   <CardContent className="">
-                    <h3>{recipe.title}</h3>
-                    <span>{recipe.description}</span>
+                    <div className="flex flex-col leading-4">
+                      <h4 className="text-md ">Descrizione</h4>
+                      <span className="text-sm font-light">{recipe.description}</span>
+                    </div>
                   </CardContent>
                 </Card>
               );
