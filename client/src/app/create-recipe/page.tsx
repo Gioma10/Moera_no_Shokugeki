@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { useForm } from "react-hook-form";
+import { ControllerRenderProps, useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,11 @@ import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { createRecipe } from "@/api/recipes";
 import { useRouter } from "next/navigation";
+import { fileCompression } from "@/utils/fileCompression";
+import ImageInput from "@/components/ImageInput";
 
 const RecipeSchema = z.object({
-  image: z.file(),
+  image: z.union([z.instanceof(File), z.instanceof(Blob)]),
   title: z.string(),
   description: z.string(),
   // category: z.string(),
@@ -64,23 +66,8 @@ const CreateRecipe = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-5"
           >
-            <FormField
-              name="image"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <input
-                      type="file"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) field.onChange(file);
-                      }}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+            <ImageInput name="image" control={form.control} />
+
             <FormField
               name="title"
               control={form.control}
