@@ -2,10 +2,8 @@
 
 import { getRecipes } from "@/api/recipes";
 import { RecipeCard, RecipeCardSkeleton } from "@/components/RecipeCard";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { match } from "ts-pattern";
 
@@ -16,7 +14,7 @@ export default function Recipes() {
   });
 
   return (
-    <div className="flex flex-col gap-10 pt-20">
+    <div className="flex flex-col gap-10 pt-30">
       <div className="flex items-center justify-center">
         <Link
           href="/"

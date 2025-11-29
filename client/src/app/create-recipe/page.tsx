@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import { ControllerRenderProps, useForm } from "react-hook-form";
+import {useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { createRecipe } from "@/api/recipes";
 import { useRouter } from "next/navigation";
-import { fileCompression } from "@/utils/fileCompression";
 import ImageInput from "@/components/ImageInput";
 
 const RecipeSchema = z.object({

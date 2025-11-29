@@ -5,13 +5,14 @@ export type RecipeFromServer = {
   title: string;
   description: string;
   image: string; // URL di Cloudinary
-}
+};
 
 // Get recipes
 export const getRecipes = async (): Promise<RecipeFromServer[]> => {
   const res = await fetch(`${localurl}/api/recipes`, {
     method: "GET",
   });
+
   if (!res.ok) throw new Error("Errore on recipes visualization");
   return res.json();
 };
@@ -22,6 +23,18 @@ export const createRecipe = async (newRecipe: FormData) => {
     method: "POST",
     body: newRecipe,
   });
+
+  if (!res.ok) throw new Error("Errore on recipe creation");
+
+  return res.json();
+};
+
+// Delete recipe
+export const deleteRecipe = async (id: string) => {
+  const res = await fetch(`${localurl}/api/recipes/${id}`, {
+    method: "DELETE",
+  });
+
   if (!res.ok) throw new Error("Errore on recipe creation");
 
   return res.json();

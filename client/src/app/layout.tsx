@@ -49,7 +49,7 @@ export default function RootLayout({
       >
         <Header />
         <ReactQueryProvider>
-          <main className="p-10">{children}</main>
+          <main>{children}</main>
         </ReactQueryProvider>
       </body>
     </html>
