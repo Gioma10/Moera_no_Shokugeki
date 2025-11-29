@@ -1,6 +1,7 @@
 "use client";
 
 import { getRecipes } from "@/api/recipes";
+import { RecipeCard, RecipeCardSkeleton } from "@/components/RecipeCard";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeftIcon } from "lucide-react";
@@ -15,47 +16,35 @@ export default function Recipes() {
   });
 
   return (
-    <div className="flex flex-col gap-2 pt-20">
-      <div>
-        <Link href="/" className="border-2 rounded-full p-2">
+    <div className="flex flex-col gap-10 pt-20">
+      <div className="flex items-center justify-center">
+        <Link
+          href="/"
+          className="border-2 rounded-full p-2 hover:shadow flex-none"
+        >
           <ArrowLeftIcon />
         </Link>
+
+        <div className="flex-">Search bar</div>
       </div>
-      {match(recipesQueryResult)
-        .with({ status: "error" }, () => <div>Error...</div>)
-        .with({ status: "pending" }, () => <div>Skeleton...</div>)
-        .with({ status: "success" }, () => (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-5">
-            {recipesQueryResult.data?.map((recipe) => {
-              return (
-                <Card
-                  key={recipe.id}
-                  className="shadow border-2 border-secondary hover:shadow-2xl hover:border-primary transition-all duration-300 hover:-translate-y-5 cursor-pointer"
-                >
-                  <CardHeader>
-                    <div className="w-full h-40 relative">
-                      {recipe.image && (
-                        <Image src={recipe.image} alt="Recipe Image" fill />
-                      )}
-                    </div>
-                    <h3 className="text-xl font-bold">
-                      {recipe.title.toUpperCase()}
-                    </h3>
-                  </CardHeader>
-                  <CardContent className="">
-                    <div className="flex flex-col leading-4">
-                      <h4 className="text-md ">Descrizione</h4>
-                      <span className="text-sm font-light">
-                        {recipe.description}
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-          </div>
-        ))
-        .exhaustive()}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-5">
+        {match(recipesQueryResult)
+          .with({ status: "error" }, () => <div>Error...</div>)
+          .with({ status: "pending" }, () => {
+            const count = recipesQueryResult.data?.length ?? 4;
+
+            return Array.from({ length: count }).map((_, i) => (
+              <RecipeCardSkeleton key={i} />
+            ));
+          })
+          .with({ status: "success" }, () =>
+            recipesQueryResult.data?.map((recipe) => (
+              <RecipeCard recipe={recipe} />
+            ))
+          )
+          .exhaustive()}
+      </div>
     </div>
   );
 }
