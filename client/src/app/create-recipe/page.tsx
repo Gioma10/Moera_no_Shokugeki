@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
-import {useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
@@ -11,6 +11,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createRecipe } from "@/api/recipes";
 import { useRouter } from "next/navigation";
 import ImageInput from "@/components/ImageInput";
+import { RatingInput } from "@/components/RatingInput";
 
 const RecipeSchema = z.object({
   image: z.union([z.instanceof(File), z.instanceof(Blob)]),
@@ -50,11 +51,11 @@ const CreateRecipe = () => {
   const onSubmit = (data: z.infer<typeof RecipeSchema>) => {
     console.log("Here the data", data);
 
-    const payload = new FormData();
-    payload.append("image", data.image);
-    payload.append("title", data.title);
-    payload.append("description", data.description);
-    onCreate(payload);
+    // const payload = new FormData();
+    // payload.append("image", data.image);
+    // payload.append("title", data.title);
+    // payload.append("description", data.description);
+    // onCreate(payload);
   };
 
   return (
@@ -65,7 +66,12 @@ const CreateRecipe = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-5"
           >
-            <ImageInput name="image" control={form.control} />
+            <div className="flex gap-5 ">
+              <ImageInput name="image" control={form.control} />
+              <div className="flex flex-col">
+                <RatingInput />
+              </div>
+            </div>
 
             <FormField
               name="title"
@@ -78,7 +84,7 @@ const CreateRecipe = () => {
                 </FormItem>
               )}
             />
-            <FormField
+            {/* <FormField
               name="description"
               control={form.control}
               render={({ field }) => (
@@ -88,9 +94,9 @@ const CreateRecipe = () => {
                   </FormControl>
                 </FormItem>
               )}
-            />
+            /> */}
 
-            <Button type="submit">Create</Button>
+            <Button type="submit">Avanti</Button>
           </form>
         </Form>
       </Card>
