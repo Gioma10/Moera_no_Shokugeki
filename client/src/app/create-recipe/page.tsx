@@ -12,17 +12,19 @@ import { createRecipe } from "@/api/recipes";
 import { useRouter } from "next/navigation";
 import ImageInput from "@/components/ImageInput";
 import { RatingInput } from "@/components/RatingInput";
+import { Difficulty } from "@/components/Difficulty";
 
 const RecipeSchema = z.object({
   image: z.union([z.instanceof(File), z.instanceof(Blob)]),
   title: z.string(),
-  description: z.string(),
+  // description: z.string(),
   // category: z.string(),
   // ingredients: z.array(z.string().min(1, "L'ingrediente non può essere vuoto")).min(1, "Inserisci almeno un ingrediente"),
   // preparation: z.string(),
   // coockingTime: z.number(),
   // preparationTime: z.number(),
-  // rating: z.number().min(1).max(5),
+  rating: z.number().min(1).max(5),
+  difficulty: z.string(),
 });
 
 const CreateRecipe = () => {
@@ -31,7 +33,8 @@ const CreateRecipe = () => {
     defaultValues: {
       image: undefined,
       title: "",
-      description: "",
+      rating: 0,
+      difficulty: "",
     },
   });
   const router = useRouter();
@@ -66,10 +69,11 @@ const CreateRecipe = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-5"
           >
-            <div className="flex gap-5 ">
+            <div className="flex gap-5 items-center">
               <ImageInput name="image" control={form.control} />
-              <div className="flex flex-col">
-                <RatingInput />
+              <div className="flex flex-col gap-5 justify-between">
+                <RatingInput name="rating" control={form.control} />
+                <Difficulty name="difficulty" control={form.control} />
               </div>
             </div>
 
@@ -79,7 +83,7 @@ const CreateRecipe = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder="title" {...field} />
+                    <Input className="py-5" placeholder="Title" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -96,7 +100,11 @@ const CreateRecipe = () => {
               )}
             /> */}
 
-            <Button type="submit">Avanti</Button>
+            <div className="flex justify-end">
+              <Button type="submit" className="cursor-pointer">
+                Next
+              </Button>
+            </div>
           </form>
         </Form>
       </Card>

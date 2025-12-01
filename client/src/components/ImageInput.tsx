@@ -4,13 +4,9 @@ import React, { useState, useRef } from "react";
 import { Controller } from "react-hook-form";
 import { fileCompression } from "@/utils/fileCompression";
 import { XIcon } from "lucide-react";
+import { ControllerProps } from "@/types/controllerProps";
 
-interface Props {
-  name: string;
-  control: any;
-}
-
-const ImageInput: React.FC<Props> = ({ name, control }) => {
+const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -29,7 +25,7 @@ const ImageInput: React.FC<Props> = ({ name, control }) => {
       name={name}
       control={control}
       render={({ field }) => (
-        <div className="relative w-30 h-30 border rounded-lg group">
+        <div className="relative w-40 h-40 border rounded-lg group">
           {preview && (
             <img
               src={preview}
