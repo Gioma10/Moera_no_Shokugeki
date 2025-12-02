@@ -36,7 +36,7 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
           {preview && (
             <div
               onClick={() => removeImage(field)}
-              className="border border-primary rounded-3xl p-1 bg-white absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 hidden group-hover:block cursor-pointer hover:bg-red-200"
+              className="border border-primary rounded-3xl p-1 bg-white absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 hidden group-hover:block cursor-pointer hover:bg-red-500"
             >
               <XIcon size={15} />
             </div>
@@ -44,7 +44,9 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
 
           <label
             htmlFor="file"
-            className=" absolute top-0 w-full h-full flex items-center justify-center cursor-pointer"
+            className={`absolute top-0 w-full h-full flex items-center justify-center cursor-pointer ${
+              preview ? "pointer-events-none" : ""
+            }`}
           >
             {preview ? "" : "Add"}
           </label>

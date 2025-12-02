@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import ImageInput from "@/components/ImageInput";
 import { RatingInput } from "@/components/RatingInput";
 import { Difficulty } from "@/components/Difficulty";
+import { useState } from "react";
+import { FormSteps } from "@/components/FromSteps";
 
 const RecipeSchema = z.object({
   image: z.union([z.instanceof(File), z.instanceof(Blob)]),
@@ -27,7 +29,12 @@ const RecipeSchema = z.object({
   difficulty: z.string(),
 });
 
+
 const CreateRecipe = () => {
+  const [step, setStep] = useState<number>(3)
+
+  const router = useRouter();
+
   const form = useForm({
     resolver: zodResolver(RecipeSchema),
     defaultValues: {
@@ -37,7 +44,7 @@ const CreateRecipe = () => {
       difficulty: "",
     },
   });
-  const router = useRouter();
+
 
   const { mutate: onCreate } = useMutation({
     mutationFn: createRecipe,
@@ -62,7 +69,8 @@ const CreateRecipe = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col justify-center items-center h-screen">
+      <FormSteps step={step}/>
       <Card className=" py-5 px-10 sm:p-10 m-5">
         <Form {...form}>
           <form
@@ -83,7 +91,11 @@ const CreateRecipe = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input className="py-5 sm:py-6" placeholder="Title" {...field} />
+                    <Input
+                      className="py-5 sm:py-6"
+                      placeholder="Title"
+                      {...field}
+                    />
                   </FormControl>
                 </FormItem>
               )}
