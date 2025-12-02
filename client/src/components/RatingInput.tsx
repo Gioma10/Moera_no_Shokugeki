@@ -18,15 +18,15 @@ export const RatingInput: React.FC<ControllerProps> = ({ control, name }) => {
       control={control}
       render={({ field }) => {
         return (
-          <div className="flex gap-0.5">
+          <div className="flex gap-0.5 justify-center sm:justify-start">
             {Array.from({ length: 5 }, (_, i) => {
               const isActive = i < vote;
               return (
                 <StarIcon
                   fill={` ${isActive ? "yellow" : "white"}`}
                   onClick={() => onSelect(i, field)}
-                  className={`cursor-pointer ${
-                    isActive ? "text-yellow-400" : "text-gray-400"
+                  className={`cursor-pointer text-gray-400 ${
+                    isActive && "text-yellow-400" 
                   }`}
                 />
               );

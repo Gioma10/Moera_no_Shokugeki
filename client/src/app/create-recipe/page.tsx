@@ -63,15 +63,15 @@ const CreateRecipe = () => {
 
   return (
     <div className="flex justify-center items-center h-screen">
-      <Card className="p-10">
+      <Card className=" py-5 px-10 sm:p-10 m-5">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex flex-col gap-5"
           >
-            <div className="flex gap-5 items-center">
+            <div className="flex flex-col sm:flex-row gap-5 items-center">
               <ImageInput name="image" control={form.control} />
-              <div className="flex flex-col gap-5 justify-between">
+              <div className="flex flex-col gap-5">
                 <RatingInput name="rating" control={form.control} />
                 <Difficulty name="difficulty" control={form.control} />
               </div>
@@ -83,7 +83,7 @@ const CreateRecipe = () => {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input className="py-5" placeholder="Title" {...field} />
+                    <Input className="py-5 sm:py-6" placeholder="Title" {...field} />
                   </FormControl>
                 </FormItem>
               )}

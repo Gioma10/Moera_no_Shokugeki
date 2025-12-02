@@ -25,12 +25,12 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
       name={name}
       control={control}
       render={({ field }) => (
-        <div className="relative w-40 h-40 border rounded-lg group">
+        <div className=" relative w-30 h-30 sm:w-40 sm:h-40 md:w-60 md:h-60 border rounded-lg group">
           {preview && (
             <img
               src={preview}
               alt="Preview"
-              className="mb-4 max-h-40 z-50 object-contain rounded-lg"
+              className="mb-4 sm:max-w-40 md:max-w-60 z-50 object-contain rounded-lg"
             />
           )}
           {preview && (
@@ -44,7 +44,7 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
 
           <label
             htmlFor="file"
-            className="absolute top-0 w-full h-full flex items-center justify-center cursor-pointer"
+            className=" absolute top-0 w-full h-full flex items-center justify-center cursor-pointer"
           >
             {preview ? "" : "Add"}
           </label>

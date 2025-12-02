@@ -5,6 +5,7 @@ import { ControllerProps } from "@/types/controllerProps";
 
 export const Difficulty: React.FC<ControllerProps> = ({ name, control }) => {
   const [selected, setSelected] = useState<string | null>(null);
+
   const levels = [
     { color: "green", label: "easy" },
     { color: "yellow", label: "medium" },
@@ -17,6 +18,7 @@ export const Difficulty: React.FC<ControllerProps> = ({ name, control }) => {
     setSelected(activeValue);
     field.onChange(activeValue);
   };
+
   return (
     <Controller
       name={name}
@@ -31,7 +33,7 @@ export const Difficulty: React.FC<ControllerProps> = ({ name, control }) => {
                 onClick={() => handleSelect(lv.label, field)}
                 className={` ${
                   selected === lv.label ? "border-2" : "opacity-40 "
-                } cursor-pointer border-primary`}
+                } cursor-pointer border-primary md:text-base md:p-5 sm:text-sm sm:p-2 text-xs p-1`}
                 key={lv.label}
               >
                 {lv.label}
