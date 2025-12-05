@@ -38,7 +38,7 @@ const upload = multer({ storage });
 app.post("/api/recipes", upload.single("image"), async (req, res) => {
   try {
     const file = req.file;
-    const { title, description } = req.body;
+    const { title, rating, difficulty} = req.body;
 
     if (!file) return res.status(400).json({ error: "Missing file" });
 
@@ -58,7 +58,8 @@ app.post("/api/recipes", upload.single("image"), async (req, res) => {
       image: result.secure_url,
       public_id: result.public_id,
       title,
-      description,
+      rating,
+      difficulty,
     };
 
     const docRef = await db.collection("recipes").add(newRecipe);
