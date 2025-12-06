@@ -1,5 +1,5 @@
 import z from "zod";
-import { RecipeSchema } from "./page";
+import { RecipeSchema } from "@/types/recipes";
 import { UseFormReturn } from "react-hook-form";
 
 export const ThirdStep = ({form}: {form: UseFormReturn<z.infer<typeof RecipeSchema>>}) => {

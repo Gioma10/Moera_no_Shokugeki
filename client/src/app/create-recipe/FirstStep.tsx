@@ -5,7 +5,7 @@ import ImageInput from "@/components/CreateRecipe/ImageInput";
 import { RatingInput } from "@/components/CreateRecipe/RatingInput";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { RecipeSchema } from "./page";
+import { RecipeSchema } from "@/types/recipes";
 import { UseFormReturn } from "react-hook-form";
 import z from "zod";
 

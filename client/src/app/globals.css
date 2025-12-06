@@ -131,3 +131,7 @@ h1 {
     @apply bg-background text-foreground;
   }
 }
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

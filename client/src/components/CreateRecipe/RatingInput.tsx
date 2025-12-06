@@ -23,6 +23,7 @@ export const RatingInput: React.FC<ControllerProps> = ({ control, name }) => {
               const isActive = i < vote;
               return (
                 <StarIcon
+                key={i}
                   fill={` ${isActive ? "yellow" : "white"}`}
                   onClick={() => onSelect(i, field)}
                   className={`cursor-pointer text-gray-400 ${

@@ -15,27 +15,15 @@ import { FirstStep } from "./FirstStep";
 import { match } from "ts-pattern";
 import { SecondStep } from "./SecondStep";
 import { ThirdStep } from "./ThirdStep";
+import { RecipeSchema } from "@/types/recipes";
 
-export const RecipeSchema = z.object({
-  image: z.union([z.instanceof(File), z.instanceof(Blob)], {
-    error: "Image is required",
-  }),
-  title: z.string().min(1, "Title is required"),
-  rating: z.number().min(1),
-  difficulty: z.string().min(1, "Difficulty is required"),
-  // description: z.string(),
-  // category: z.string(),
-  // ingredients: z.array(z.string().min(1, "L'ingrediente non può essere vuoto")).min(1, "Inserisci almeno un ingrediente"),
-  // preparation: z.string(),
-  // coockingTime: z.number(),
-  // preparationTime: z.number(),
-});
+
 
 const steps = ["first", "second", "third"] as const;
 export type Step = (typeof steps)[number]; // "first" | "second" | "third"
 
 const CreateRecipe = () => {
-  const [step, setStep] = useState<Step>("first");
+  const [step, setStep] = useState<Step>("second");
 
   const router = useRouter();
 
