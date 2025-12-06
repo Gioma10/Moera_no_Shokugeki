@@ -17,7 +17,7 @@ import { DotX } from "../dotX";
 
 type IngredientData = {
   ingredient: string;
-  quantity: number | "";
+  quantity: string;
   unit: "g" | "l" | "ml" | "pcs" | "q.b.";
 };
 
@@ -29,7 +29,7 @@ export const Ingredients: React.FC<ControllerProps> = ({ name, control }) => {
 
   const addIngredient = (field: ControllerRenderProps) => {
     if (!ingredient || !unit) return;
-    if (unit !== "q.b." && (quantity === "" || quantity === 0)) return;
+    if (unit !== "q.b." && (!quantity || Number(quantity) <= 0)) return;
     if (unit === "q.b." && quantity) return;
 
     const newList = [...(field.value || []), { ingredient, quantity, unit }];
@@ -77,7 +77,11 @@ export const Ingredients: React.FC<ControllerProps> = ({ name, control }) => {
                     type="text"
                     placeholder="Quantity"
                     value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
+                    onChange={(e) => {
+                        // permette solo numeri
+                        const val = e.target.value;
+                        if (/^\d*$/.test(val)) setQuantity(val);
+                      }}
                   />
 
                   <Select
@@ -113,7 +117,7 @@ export const Ingredients: React.FC<ControllerProps> = ({ name, control }) => {
               {!field.value || field.value.length === 0 ? (
                 <p className="text-gray-400">No ingredient...</p>
               ) : (
-                <ul >
+                <ul>
                   {(field.value || []).map((ing: IngredientData, i: number) => {
                     return (
                       <motion.li

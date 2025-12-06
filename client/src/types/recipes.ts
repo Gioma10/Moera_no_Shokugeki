@@ -22,12 +22,15 @@ export const RecipeSchema = z.object({
   difficulty: z.string().min(1, "Difficulty is required"),
   // description: z.string(),
   // category: z.string(),
-  ingredients: z
-    .array(
+  ingredients: z.array(
       z.object({
         ingredient: z.string().min(1, "L'ingrediente non può essere vuoto"),
-        quantity: z.number().optional(),
-        type: z.enum(["g", "l", "ml", "pcs", "q.b."]),
+        quantity: z
+        .string()
+        .refine((val) => val === "" || !isNaN(Number(val)), {
+          message: "Quantity must be a number",
+        }),
+        unit: z.enum(["g", "l", "ml", "pcs", "q.b."]),
       })
     )
     .min(1, "Inserisci almeno un ingrediente"),
