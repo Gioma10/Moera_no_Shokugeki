@@ -1,8 +1,8 @@
 'use client'
 
-import { Difficulty } from "@/components/Difficulty";
-import ImageInput from "@/components/ImageInput";
-import { RatingInput } from "@/components/RatingInput";
+import { Difficulty } from "@/components/CreateRecipe/Difficulty";
+import ImageInput from "@/components/CreateRecipe/ImageInput";
+import { RatingInput } from "@/components/CreateRecipe/RatingInput";
 import { FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { RecipeSchema } from "./page";

@@ -10,7 +10,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createRecipe } from "@/api/recipes";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FormSteps } from "@/components/FromSteps";
+import { FormSteps } from "@/components/CreateRecipe/FromSteps";
 import { FirstStep } from "./FirstStep";
 import { match } from "ts-pattern";
 import { SecondStep } from "./SecondStep";
@@ -62,11 +62,25 @@ const CreateRecipe = () => {
     },
   });
 
+  const stepFields: Record<Step, (keyof z.infer<typeof RecipeSchema>)[]> = {
+    first: ["image", "title", "rating", "difficulty"],
+    second: [],
+    third: [],
+  };
+
   // Navigation
-  const goNext = () =>
+  const goNext = async () => {
+
+    const fieldsToValidate =  stepFields[step]
+    const isValid = await form.trigger(fieldsToValidate);
+
+    if (!isValid) return;
+
     setStep(
       (prev) => steps[Math.min(steps.indexOf(prev) + 1, steps.length - 1)]
     );
+  };
+
   const goPrev = () =>
     setStep((prev) => steps[Math.max(steps.indexOf(prev) - 1, 0)]);
 
@@ -85,7 +99,7 @@ const CreateRecipe = () => {
 
   return (
     <div className="flex flex-col justify-center items-center h-screen gap-10">
-      <h2 className="text-3xl font-bold uppercase">Crea una nuova ricetta</h2>
+      <h2 className="text-3xl font-bold uppercase">Create a new recipe</h2>
       <FormSteps step={step} />
       <Card className=" py-5 px-10 sm:p-10 mx-5">
         <Form {...form}>
@@ -106,14 +120,27 @@ const CreateRecipe = () => {
                   type="button"
                   className="cursor-pointer"
                 >
-                  Indietro
+                  Back
                 </Button>
               ) : (
                 <div />
               )}
-              <Button onClick={goNext} type="button" className="cursor-pointer">
-                Next
-              </Button>
+              {step === "third" ? (
+                <Button
+                  type="submit"
+                  className="cursor-pointer"
+                >
+                  Create
+                </Button>
+              ) : (
+                <Button
+                  onClick={goNext}
+                  type="button"
+                  className="cursor-pointer"
+                >
+                  Next
+                </Button>
+              )}
             </div>
           </form>
         </Form>

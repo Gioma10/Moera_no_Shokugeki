@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Controller, ControllerRenderProps } from "react-hook-form";
 import { ControllerProps } from "@/types/controllerProps";
 
