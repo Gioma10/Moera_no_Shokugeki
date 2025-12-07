@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export const DotX = () => {
   return (
-    <div className="w-5 h-5 relative overflow-visible border">
+    <div className="w-5 h-5 relative overflow-visible">
       {/* DOT */}
       <motion.span
         className="absolute inset-0 flex items-center justify-center"

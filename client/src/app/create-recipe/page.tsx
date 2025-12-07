@@ -17,13 +17,11 @@ import { SecondStep } from "./SecondStep";
 import { ThirdStep } from "./ThirdStep";
 import { RecipeSchema } from "@/types/recipes";
 
-
-
 const steps = ["first", "second", "third"] as const;
 export type Step = (typeof steps)[number]; // "first" | "second" | "third"
 
 const CreateRecipe = () => {
-  const [step, setStep] = useState<Step>("first");
+  const [step, setStep] = useState<Step>("second");
 
   const router = useRouter();
 
@@ -58,8 +56,7 @@ const CreateRecipe = () => {
 
   // Navigation
   const goNext = async () => {
-
-    const fieldsToValidate =  stepFields[step]
+    const fieldsToValidate = stepFields[step];
     const isValid = await form.trigger(fieldsToValidate);
 
     if (!isValid) return;
@@ -114,10 +111,7 @@ const CreateRecipe = () => {
                 <div />
               )}
               {step === "third" ? (
-                <Button
-                  type="submit"
-                  className="cursor-pointer"
-                >
+                <Button type="submit" className="cursor-pointer">
                   Create
                 </Button>
               ) : (

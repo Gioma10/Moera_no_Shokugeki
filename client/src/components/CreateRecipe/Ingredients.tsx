@@ -13,7 +13,7 @@ import { Card } from "../ui/card";
 import { Controller, ControllerRenderProps } from "react-hook-form";
 import { ControllerProps } from "@/types/controllerProps";
 import { motion } from "framer-motion";
-import { DotX } from "../dotX";
+import { DotX } from "../DotX";
 
 type IngredientData = {
   ingredient: string;
