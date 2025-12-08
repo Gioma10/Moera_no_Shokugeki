@@ -22,7 +22,7 @@ export const RecipeSchema = z.object({
   stimatedTime: z.string().refine((val) => val === "" || !isNaN(Number(val)), {
     message: "Quantity must be a number",
   }),
-  temperature: z.string().min(1, "Difficulty is required"),
+  temperature: z.enum(["cold", "hot"]),
   category: z.enum(["firstCourse", "secondCourse", "dessert", "starter"]),
   ingredients: z
     .array(
@@ -40,8 +40,8 @@ export const RecipeSchema = z.object({
   // preparation: z.string(),
 });
 
-// export const IngredientSchema = z.object({
-//   ingredient: z.string().min(1, "Required"),
-//   quantity: z.number().min(0, "Quantity must be ≥ 0"),
-//   type: z.enum(["g", "l", "ml", "pcs", "q.b."]),
-// })
+export type IngredientData = {
+  ingredient: string;
+  quantity: string;
+  unit: "g" | "l" | "ml" | "pcs" | "q.b.";
+};

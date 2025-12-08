@@ -50,7 +50,7 @@ const CreateRecipe = () => {
 
   const stepFields: Record<Step, (keyof z.infer<typeof RecipeSchema>)[]> = {
     first: ["image", "title", "rating", "difficulty"],
-    second: ["ingredients"],
+    second: ["ingredients", "category", "stimatedTime", "temperature" ],
     third: [],
   };
 
