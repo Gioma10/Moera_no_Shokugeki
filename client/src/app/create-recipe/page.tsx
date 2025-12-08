@@ -21,7 +21,7 @@ const steps = ["first", "second", "third"] as const;
 export type Step = (typeof steps)[number]; // "first" | "second" | "third"
 
 const CreateRecipe = () => {
-  const [step, setStep] = useState<Step>("second");
+  const [step, setStep] = useState<Step>("first");
 
   const router = useRouter();
 
@@ -50,7 +50,7 @@ const CreateRecipe = () => {
 
   const stepFields: Record<Step, (keyof z.infer<typeof RecipeSchema>)[]> = {
     first: ["image", "title", "rating", "difficulty"],
-    second: ["ingredients", "category", "stimatedTime", "temperature" ],
+    second: ["ingredients", "category", "stimatedTime", "temperature"],
     third: [],
   };
 
