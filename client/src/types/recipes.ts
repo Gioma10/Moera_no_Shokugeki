@@ -37,7 +37,10 @@ export const RecipeSchema = z.object({
       })
     )
     .min(1, "Inserisci almeno un ingrediente"),
-  // preparation: z.string(),
+  preparation: z.string(),
+  note: z.string(),
+  method: z.string(),
+  master: z.enum(["Moe", "Nowy"]),
 });
 
 export type IngredientData = {

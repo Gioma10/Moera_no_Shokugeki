@@ -21,7 +21,7 @@ const steps = ["first", "second", "third"] as const;
 export type Step = (typeof steps)[number]; // "first" | "second" | "third"
 
 const CreateRecipe = () => {
-  const [step, setStep] = useState<Step>("first");
+  const [step, setStep] = useState<Step>("third");
 
   const router = useRouter();
 
