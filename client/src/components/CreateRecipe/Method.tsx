@@ -51,7 +51,7 @@ export const Method: React.FC<ControllerProps> = ({ name, control }) => {
           <FormItem>
             <FormControl>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-full">
+                <SelectTrigger className="w-[400px] h-[200px]">
                   <SelectValue placeholder="Method"></SelectValue>
                 </SelectTrigger>
                 <SelectContent>

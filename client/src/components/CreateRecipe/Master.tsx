@@ -2,8 +2,9 @@ import { ControllerProps } from "@/types/controllerProps";
 import { FormControl, FormField, FormItem } from "../ui/form";
 import { FlameIcon, SnowflakeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
+export const Master: React.FC<ControllerProps> = ({ name, control }) => {
   return (
     <FormField
       name={name}
@@ -13,31 +14,37 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
         return (
           <FormItem>
             <FormControl>
-              <div className="flex items-center relative w-18 rounded-md shadow-xs">
+              <div className="flex flex-row items-center gap-2 w-[200px] ">
                 <div
-                  onClick={() => field.onChange("cold")}
-                  className={cn(
-                    "py-2 ps-2 pe-5  hover:bg-cyan-300 border border-e-0 h-full top-0 cursor-pointer rounded-s-md absolute left-0 transition-all duration-300",
-                    field.value === "cold" && "bg-cyan-300"
-                  )}
-                  style={{
-                    clipPath: "polygon(0 0, 100% 0, 60% 100%, 0 100%)",
-                  }}
+                  onClick={() => field.onChange("nowy")}
+                  className="flex-1 flex justify-center border rounded-md shadow-xs cursor-pointer"
                 >
-                  <SnowflakeIcon size={17} />
+                  <Image
+                    src="/images/nowy.png"
+                    alt="Nowy"
+                    width={35}
+                    height={35}
+                    className={cn(
+                      "transition-all duration-300 grayscale",
+                      field.value === "nowy" && "grayscale-0"
+                    )}
+                  />
                 </div>
 
                 <div
-                  onClick={() => field.onChange("hot")}
-                  className={cn(
-                    "pe-2 ps-5 py-2 hover:bg-red-300 border border-s-0 top-0 cursor-pointer  h-full rounded-e-md absolute right-0 transition-all duration-300",
-                    field.value === "hot" && "bg-red-300"
-                  )}
-                  style={{
-                    clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
-                  }}
+                  onClick={() => field.onChange("moe")}
+                  className="flex-1 flex justify-center border rounded-md shadow-xs cursor-pointer"
                 >
-                  <FlameIcon size={17} />
+                  <Image
+                    src="/images/moe.png"
+                    alt="Moe"
+                    width={35}
+                    height={35}
+                    className={cn(
+                      "transition-all duration-300 grayscale",
+                      field.value === "moe" && "grayscale-0"
+                    )}
+                  />
                 </div>
               </div>
             </FormControl>

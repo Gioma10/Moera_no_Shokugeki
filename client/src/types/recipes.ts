@@ -40,7 +40,7 @@ export const RecipeSchema = z.object({
   preparation: z.string(),
   note: z.string(),
   method: z.string(),
-  master: z.enum(["Moe", "Nowy"]),
+  master: z.enum(["moe", "nowy"]),
 });
 
 export type IngredientData = {

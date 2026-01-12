@@ -21,7 +21,7 @@ const steps = ["first", "second", "third"] as const;
 export type Step = (typeof steps)[number]; // "first" | "second" | "third"
 
 const CreateRecipe = () => {
-  const [step, setStep] = useState<Step>("third");
+  const [step, setStep] = useState<Step>("first");
 
   const router = useRouter();
 
@@ -51,7 +51,7 @@ const CreateRecipe = () => {
   const stepFields: Record<Step, (keyof z.infer<typeof RecipeSchema>)[]> = {
     first: ["image", "title", "rating", "difficulty"],
     second: ["ingredients", "category", "stimatedTime", "temperature"],
-    third: [],
+    third: ["preparation", "note", "method", "master"],
   };
 
   // Navigation
@@ -72,14 +72,28 @@ const CreateRecipe = () => {
   // Submit
   const onSubmit = (data: z.infer<typeof RecipeSchema>) => {
     const payload = new FormData();
+
+    // First step
     payload.append("image", data.image);
     payload.append("title", data.title);
     payload.append("rating", String(data.rating));
     payload.append("difficulty", data.difficulty);
 
+    // Second step
+    payload.append("ingredients", JSON.stringify(data.ingredients));
+    payload.append("category", data.category);
+    payload.append("stimatedTime", String(data.stimatedTime));
+    payload.append("temperature", String(data.temperature));
+
+    // Third step
+    payload.append("preparation", data.preparation);
+    payload.append("note", data.note ?? "");
+    payload.append("method", data.method);
+    payload.append("master", data.master);
+
     console.log("Here the data", data);
 
-    // onCreate(payload);
+    onCreate(payload);
   };
 
   return (
