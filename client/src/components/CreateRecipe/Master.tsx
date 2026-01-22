@@ -1,6 +1,5 @@
 import { ControllerProps } from "@/types/controllerProps";
 import { FormControl, FormField, FormItem } from "../ui/form";
-import { FlameIcon, SnowflakeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
