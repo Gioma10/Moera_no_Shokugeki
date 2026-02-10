@@ -38,7 +38,7 @@ const upload = multer({ storage });
 app.post("/api/recipes", upload.single("image"), async (req, res) => {
   try {
     const file = req.file;
-    const { title, rating, difficulty} = req.body;
+    const { title, rating, difficulty } = req.body;
 
     if (!file) return res.status(400).json({ error: "Missing file" });
 
@@ -49,7 +49,7 @@ app.post("/api/recipes", upload.single("image"), async (req, res) => {
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
-        }
+        },
       );
       stream.end(file.buffer);
     });
@@ -75,8 +75,8 @@ app.delete("/api/recipes/:id", async (req, res) => {
     const id = req.params.id;
 
     // Recupera il documento per avere il public_id
-    const doc = await db.collection("recipes").doc(id).get();
-    const recipe = doc.data();
+    const docSnap = await db.collection("recipes").doc(id).get();
+    const recipe = docSnap.data();
 
     // Cancella l’immagine da Cloudinary
     if (recipe?.public_id) {
@@ -95,4 +95,26 @@ app.delete("/api/recipes/:id", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
+});
+
+// Get single recipe
+app.get("/api/recipes/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const docSnap = await db.collection("recipes").doc(id).get();
+
+    if (!docSnap) {
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    res.status(200).json({
+      recipe: {
+        id: docSnap.id,
+        ...docSnap.data(),
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ error: `Error on get recipe: ${id} ` });
+  }
 });
