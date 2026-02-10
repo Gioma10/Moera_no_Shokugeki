@@ -4,43 +4,49 @@ import Image from "next/image";
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
   const queryClient = useQueryClient();
 
   const { mutate: onDelete } = useMutation({
     mutationFn: (id: string) => deleteRecipe(id),
-    onSuccess: ()=> queryClient.invalidateQueries({ queryKey: ["recipes"] })
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["recipes"] }),
   });
+
   return (
-    <Card
-      key={recipe.id}
-      className="shadow border-2 border-secondary hover:shadow-2xl hover:border-primary transition-all duration-300 hover:-translate-y-5 cursor-pointer"
-    >
-      <CardHeader>
-        <div className="w-full h-40 relative">
-          {recipe.image && <Image src={recipe.image} alt="Recipe Image" fill />}
-        </div>
-        <h3 className="text-xl font-bold">{recipe.title.toUpperCase()}</h3>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-2">
-          <div className="flex flex-col leading-4">
-            <h4 className="text-md ">Descrizione</h4>
-            <span className="text-sm font-light">{recipe.description}</span>
+    <Link href={`/recipes/${recipe.id}`}>
+      <Card
+        key={recipe.id}
+        className="shadow border-2 border-secondary hover:shadow-2xl hover:border-primary transition-all duration-300 hover:-translate-y-5 cursor-pointer"
+      >
+        <CardHeader>
+          <div className="w-full h-40 relative">
+            {recipe.image && (
+              <Image src={recipe.image} alt="Recipe Image" fill />
+            )}
           </div>
-          <div className="flex">
-            <Button
-              onClick={() => onDelete(recipe.id)}
-              variant="destructive"
-              className="cursor-pointer hover:bg-red-400"
-            >
-              Delete
-            </Button>
+          <h3 className="text-xl font-bold">{recipe.title.toUpperCase()}</h3>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col leading-4">
+              <h4 className="text-md ">Descrizione</h4>
+              <span className="text-sm font-light">{recipe.description}</span>
+            </div>
+            <div className="flex">
+              <Button
+                onClick={() => onDelete(recipe.id)}
+                variant="destructive"
+                className="cursor-pointer hover:bg-red-400"
+              >
+                Delete
+              </Button>
+            </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </Link>
   );
 };
 
