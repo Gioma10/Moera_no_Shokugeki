@@ -139,10 +139,8 @@ app.get("/api/recipes/:id", async (req, res) => {
     }
 
     res.status(200).json({
-      recipe: {
-        id: docSnap.id,
-        ...docSnap.data(),
-      },
+      id: docSnap.id,
+      ...docSnap.data(),
     });
   } catch (error) {
     res.status(500).json({ error: `Error on get recipe: ${id} ` });

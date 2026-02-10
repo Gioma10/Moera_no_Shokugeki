@@ -5,14 +5,15 @@ import { Alert } from "@/components/ui/alert";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Recipe } from "@/types/recipes";
 import { useQuery } from "@tanstack/react-query";
+import { useParams } from "next/navigation";
 import { match } from "ts-pattern";
 
-export default function RecipePage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function RecipePage() {
+  const params = useParams<{ id : string}>();
 
-  const { data: recipe, status } = useQuery({
-    queryKey: ["recipe", id],
-    queryFn: () => getRecipe(id),
+  const { data: recipe, status } = useQuery<Recipe>({
+    queryKey: ["recipe", params.id],
+    queryFn: () => getRecipe(params.id),
   });
 
   return match(status)
@@ -23,6 +24,6 @@ export default function RecipePage({ params }: { params: { id: string } }) {
       </Alert>
     ))
     .with("pending", () => <Skeleton className="w-full h-36"></Skeleton>)
-    .with("success", () => <div>kjadsnfkjansdkjlfnksdajnf</div>)
+    .with("success", () => <div>{recipe?.title}</div>)
     .exhaustive();
 }
