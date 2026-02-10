@@ -14,7 +14,7 @@ export default function Recipes() {
   });
 
   return (
-    <div className="flex flex-col gap-10 pt-30">
+    <div className="flex flex-col gap-10">
       <div className="flex items-center justify-center">
         <Link
           href="/"

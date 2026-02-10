@@ -1,16 +1,5 @@
 import z from "zod";
 
-export interface RecipeFormData {
-  id?: string;
-  image: File;
-  title: string;
-  // category: string;
-  // ingredients: string;
-  // preparations: string;
-  rating: number;
-  // preparationTime?: string;
-  // cookingTime?: string;
-}
 
 export const RecipeSchema = z.object({
   image: z.union([z.instanceof(File), z.instanceof(Blob)], {
@@ -48,3 +37,5 @@ export type IngredientData = {
   quantity: string;
   unit: "g" | "l" | "ml" | "pcs" | "q.b.";
 };
+
+export type Recipe= z.infer<typeof RecipeSchema>

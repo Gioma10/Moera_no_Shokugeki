@@ -38,7 +38,19 @@ const upload = multer({ storage });
 app.post("/api/recipes", upload.single("image"), async (req, res) => {
   try {
     const file = req.file;
-    const { title, rating, difficulty } = req.body;
+    const {
+      title,
+      rating,
+      difficulty,
+      stimatedTime,
+      temperature,
+      category,
+      ingredients,
+      preparation,
+      note,
+      method,
+      master,
+    } = req.body;
 
     if (!file) return res.status(400).json({ error: "Missing file" });
 
@@ -54,15 +66,33 @@ app.post("/api/recipes", upload.single("image"), async (req, res) => {
       stream.end(file.buffer);
     });
 
+    let parsedIngredients;
+    try {
+      parsedIngredients = JSON.parse(ingredients);
+    } catch {
+      return res
+        .status(400)
+        .json({ error: "Ingredients must be a valid JSON array" });
+    }
+
     const newRecipe = {
       image: result.secure_url,
       public_id: result.public_id,
       title,
-      rating,
+      rating: Number(rating),
       difficulty,
+      stimatedTime: Number(stimatedTime),
+      temperature,
+      category,
+      ingredients: parsedIngredients,
+      preparation,
+      note: note || "",
+      method,
+      master,
     };
 
     const docRef = await db.collection("recipes").add(newRecipe);
+
     res.status(201).json({ id: docRef.id, ...newRecipe });
   } catch (error) {
     res.status(500).json({ error: "Error on recipe creation" });

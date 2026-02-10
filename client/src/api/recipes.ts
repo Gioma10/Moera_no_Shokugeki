@@ -42,7 +42,7 @@ export const deleteRecipe = async (id: string) => {
 
 // Get recipe
 export const getRecipe = async (id: string) => {
-  const res = await fetch(`${localurl}api/recipes/${id}`);
+  const res = await fetch(`${localurl}/api/recipes/${id}`);
 
   if (!res.ok) throw new Error(`Error on get recipe: ${id} `);
 
