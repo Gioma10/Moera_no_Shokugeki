@@ -36,7 +36,11 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
 						</div>
 						<div className="flex">
 							<Button
-								onClick={() => onDelete(recipe.id)}
+								onClick={(e) => {
+									e.preventDefault();
+									e.stopPropagation();
+									onDelete(recipe.id);
+								}}
 								variant="destructive"
 								className="cursor-pointer hover:bg-red-400"
 							>

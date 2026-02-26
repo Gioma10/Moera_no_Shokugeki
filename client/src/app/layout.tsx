@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ReactQueryProvider } from "@/components/ReactQueryProvider";
-import { Header } from "../components/Header";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -27,7 +26,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gradient-to-br from-orange-50 via-white to-rose-50 min-h-screen`}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased bg-linear-to-br from-orange-50 via-white to-rose-50 min-h-screen`}
 			>
 				<ReactQueryProvider>{children}</ReactQueryProvider>
 			</body>

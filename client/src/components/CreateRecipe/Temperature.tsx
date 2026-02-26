@@ -14,7 +14,7 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
 					<FormItem>
 						<FormControl>
 							<div className="flex items-center relative w-18 rounded-md shadow-xs">
-								<div
+								<button
 									onClick={() => field.onChange("cold")}
 									className={cn(
 										"py-2 ps-2 pe-5  hover:bg-cyan-300 border border-e-0 h-full top-0 cursor-pointer rounded-s-md absolute left-0 transition-all duration-300",
@@ -25,9 +25,9 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
 									}}
 								>
 									<SnowflakeIcon size={17} />
-								</div>
+								</button>
 
-								<div
+								<button
 									onClick={() => field.onChange("hot")}
 									className={cn(
 										"pe-2 ps-5 py-2 hover:bg-red-300 border border-s-0 top-0 cursor-pointer  h-full rounded-e-md absolute right-0 transition-all duration-300",
@@ -38,7 +38,7 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
 									}}
 								>
 									<FlameIcon size={17} />
-								</div>
+								</button>
 							</div>
 						</FormControl>
 					</FormItem>
