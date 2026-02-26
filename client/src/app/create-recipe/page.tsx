@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { match } from "ts-pattern";
 import type * as z from "zod";
 import { createRecipe } from "@/api/recipes";
-import { FormSteps } from "@/components/CreateRecipe/FromSteps";
+import { StepsBar } from "@/components/CreateRecipe/StepsBar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
@@ -108,7 +108,7 @@ const CreateRecipe = () => {
 
       {/* Step indicator */}
       <div className="w-full max-w-3xl">
-        <FormSteps step={step} />
+        <StepsBar step={step} />
         <p className="text-sm text-muted-foreground mt-3 text-center font-medium">
           {STEP_LABELS[step]}
         </p>

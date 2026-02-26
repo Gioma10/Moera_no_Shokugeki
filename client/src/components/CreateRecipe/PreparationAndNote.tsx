@@ -7,19 +7,22 @@ export const Preparation: React.FC<ControllerProps> = ({ name, control }) => {
     <FormField
       name={name}
       control={control}
-      render={({ field }) => {
-        return (
-          <FormItem>
-            <FormControl>
+      render={({ field }) => (
+        <FormItem>
+          <FormControl>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                Preparazione
+              </span>
               <Textarea
-                className="w-[400px] h-[200px]"
-                placeholder="Preparation"
+                className="w-full h-36 resize-none bg-muted/40 border-0 focus-visible:ring-1 focus-visible:ring-orange-400"
+                placeholder="Descrivi la preparazione..."
                 {...field}
               />
-            </FormControl>
-          </FormItem>
-        );
-      }}
+            </div>
+          </FormControl>
+        </FormItem>
+      )}
     />
   );
 };
@@ -29,19 +32,22 @@ export const Note: React.FC<ControllerProps> = ({ name, control }) => {
     <FormField
       name={name}
       control={control}
-      render={({ field }) => {
-        return (
-          <FormItem>
-            <FormControl>
+      render={({ field }) => (
+        <FormItem>
+          <FormControl>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                Note
+              </span>
               <Textarea
-                className="w-[200px] h-[200px]"
-                placeholder="Note something..."
+                className="w-full h-36 resize-none bg-amber-50 border-0 focus-visible:ring-1 focus-visible:ring-amber-400"
+                placeholder="Note aggiuntive..."
                 {...field}
               />
-            </FormControl>
-          </FormItem>
-        );
-      }}
+            </div>
+          </FormControl>
+        </FormItem>
+      )}
     />
   );
 };

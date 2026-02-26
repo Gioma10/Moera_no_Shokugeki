@@ -9,35 +9,12 @@ import {
 } from "../ui/select";
 
 const methods = [
-  "Raw",
-  "Boiled",
-  "Simmered",
-  "Steamed",
-  "Stir-fried",
-  "Sautéed",
-  "Fried",
-  "Deep-fried",
-  "Grilled",
-  "Griddle cooked",
-  "Baked",
-  "Roasted",
-  "Braised",
-  "Stewed",
-  "Cooked in sauce",
-  "Smoked",
-  "Marinated",
-  "Sous-vide",
-  "Bain-marie",
-  "Slow cooked",
-  "Quick cooked",
-  "Microwaved",
-  "Blended",
-  "Minced",
-  "Kneaded",
-  "Fermented",
-  "Caramelized",
-  "Glazed",
-  "Gratinated",
+  "Raw", "Boiled", "Simmered", "Steamed", "Stir-fried", "Sautéed",
+  "Fried", "Deep-fried", "Grilled", "Griddle cooked", "Baked",
+  "Roasted", "Braised", "Stewed", "Cooked in sauce", "Smoked",
+  "Marinated", "Sous-vide", "Bain-marie", "Slow cooked", "Quick cooked",
+  "Microwaved", "Blended", "Minced", "Kneaded", "Fermented",
+  "Caramelized", "Glazed", "Gratinated",
 ];
 
 export const Method: React.FC<ControllerProps> = ({ name, control }) => {
@@ -45,14 +22,16 @@ export const Method: React.FC<ControllerProps> = ({ name, control }) => {
     <FormField
       name={name}
       control={control}
-      render={({ field }) => {
-        console.log(field.value);
-        return (
-          <FormItem>
-            <FormControl>
+      render={({ field }) => (
+        <FormItem>
+          <FormControl>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+                Metodo di cottura
+              </span>
               <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <SelectTrigger className="w-[400px] h-[200px]">
-                  <SelectValue placeholder="Method"></SelectValue>
+                <SelectTrigger className="w-full bg-muted/40 border-0 focus:ring-1 focus:ring-orange-400">
+                  <SelectValue placeholder="Seleziona un metodo" />
                 </SelectTrigger>
                 <SelectContent>
                   {methods.map((met) => (
@@ -62,10 +41,10 @@ export const Method: React.FC<ControllerProps> = ({ name, control }) => {
                   ))}
                 </SelectContent>
               </Select>
-            </FormControl>
-          </FormItem>
-        );
-      }}
+            </div>
+          </FormControl>
+        </FormItem>
+      )}
     />
   );
 };
