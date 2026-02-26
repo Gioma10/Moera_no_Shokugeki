@@ -1,4 +1,4 @@
 export type ControllerProps = {
-  name: string;
-  control: any;
+	name: string;
+	control: any;
 };

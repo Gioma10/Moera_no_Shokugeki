@@ -1,50 +1,50 @@
 const localurl = "http://localhost:8080";
 
 export type RecipeFromServer = {
-  id: string;
-  title: string;
-  description: string;
-  image: string; // URL di Cloudinary
+	id: string;
+	title: string;
+	description: string;
+	image: string; // URL di Cloudinary
 };
 
 // Get recipes
 export const getRecipes = async (): Promise<RecipeFromServer[]> => {
-  const res = await fetch(`${localurl}/api/recipes`, {
-    method: "GET",
-  });
+	const res = await fetch(`${localurl}/api/recipes`, {
+		method: "GET",
+	});
 
-  if (!res.ok) throw new Error("Errore on recipes visualization");
-  return res.json();
+	if (!res.ok) throw new Error("Errore on recipes visualization");
+	return res.json();
 };
 
 // Create a recipe
 export const createRecipe = async (newRecipe: FormData) => {
-  const res = await fetch(`${localurl}/api/recipes`, {
-    method: "POST",
-    body: newRecipe,
-  });
+	const res = await fetch(`${localurl}/api/recipes`, {
+		method: "POST",
+		body: newRecipe,
+	});
 
-  if (!res.ok) throw new Error("Errore on recipe creation");
+	if (!res.ok) throw new Error("Errore on recipe creation");
 
-  return res.json();
+	return res.json();
 };
 
 // Delete recipe
 export const deleteRecipe = async (id: string) => {
-  const res = await fetch(`${localurl}/api/recipes/${id}`, {
-    method: "DELETE",
-  });
+	const res = await fetch(`${localurl}/api/recipes/${id}`, {
+		method: "DELETE",
+	});
 
-  if (!res.ok) throw new Error("Errore on recipe creation");
+	if (!res.ok) throw new Error("Errore on recipe creation");
 
-  return res.json();
+	return res.json();
 };
 
 // Get recipe
 export const getRecipe = async (id: string) => {
-  const res = await fetch(`${localurl}/api/recipes/${id}`);
+	const res = await fetch(`${localurl}/api/recipes/${id}`);
 
-  if (!res.ok) throw new Error(`Error on get recipe: ${id} `);
+	if (!res.ok) throw new Error(`Error on get recipe: ${id} `);
 
-  return res.json();
+	return res.json();
 };

@@ -1,48 +1,101 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import {
+	AlertCircle,
+	ArrowLeftIcon,
+	Search,
+	UtensilsCrossed,
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
+import { match } from "ts-pattern";
 import { getRecipes } from "@/api/recipes";
 import { RecipeCard, RecipeCardSkeleton } from "@/components/RecipeCard";
-import { useQuery } from "@tanstack/react-query";
-import { ArrowLeftIcon } from "lucide-react";
-import Link from "next/link";
-import { match } from "ts-pattern";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Input } from "@/components/ui/input";
 
 export default function Recipes() {
-  const recipesQueryResult = useQuery({
-    queryKey: ["recipes"],
-    queryFn: getRecipes,
-  });
+	const [search, setSearch] = useState("");
 
-  return (
-    <div className="flex flex-col gap-10">
-      <div className="flex items-center justify-center">
-        <Link
-          href="/"
-          className="border-2 rounded-full p-2 hover:shadow flex-none"
-        >
-          <ArrowLeftIcon />
-        </Link>
+	const recipesQueryResult = useQuery({
+		queryKey: ["recipes"],
+		queryFn: getRecipes,
+	});
 
-        <div className="flex-">Search bar</div>
-      </div>
+	const filtered = recipesQueryResult.data?.filter((r) =>
+		r.title.toLowerCase().includes(search.toLowerCase()),
+	);
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-5">
-        {match(recipesQueryResult)
-          .with({ status: "error" }, () => <div>Error...</div>)
-          .with({ status: "pending" }, () => {
-            const count = recipesQueryResult.data?.length ?? 4;
+	return (
+		<div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+			{/* Header */}
+			<div className="flex items-center gap-4">
+				<Link
+					href="/"
+					className="flex-none border-2 rounded-full p-2 hover:shadow-md transition-shadow bg-white"
+				>
+					<ArrowLeftIcon className="w-5 h-5" />
+				</Link>
 
-            return Array.from({ length: count }).map((_, i) => (
-              <RecipeCardSkeleton key={i} />
-            ));
-          })
-          .with({ status: "success" }, () =>
-            recipesQueryResult.data?.map((recipe) => (
-              <RecipeCard recipe={recipe} />
-            ))
-          )
-          .exhaustive()}
-      </div>
-    </div>
-  );
+				<div className="flex-1 relative">
+					<Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+					<Input
+						placeholder="Cerca una ricetta..."
+						value={search}
+						onChange={(e) => setSearch(e.target.value)}
+						className="pl-9 rounded-full bg-muted/40 border-0 focus-visible:ring-1"
+					/>
+				</div>
+			</div>
+
+			{/* Title */}
+			<div className="space-y-1">
+				<h1 className="text-3xl font-bold flex items-center gap-2">
+					<UtensilsCrossed className="w-7 h-7 text-orange-500" />
+					Le Ricette
+				</h1>
+				{recipesQueryResult.status === "success" && (
+					<p className="text-muted-foreground text-sm">
+						{filtered?.length ?? 0} ricett{filtered?.length === 1 ? "a" : "e"}{" "}
+						trovat{filtered?.length === 1 ? "a" : "e"}
+					</p>
+				)}
+			</div>
+
+			{/* Grid */}
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 w-full gap-5">
+				{match(recipesQueryResult)
+					.with({ status: "error" }, () => (
+						<div className="col-span-full">
+							<Alert variant="destructive" className="max-w-xl">
+								<AlertCircle className="w-4 h-4" />
+								<AlertDescription>
+									Si è verificato un errore nel caricamento delle ricette.
+								</AlertDescription>
+							</Alert>
+						</div>
+					))
+					.with({ status: "pending" }, () =>
+						Array.from({ length: 8 }).map((_, i) => (
+							<RecipeCardSkeleton key={i} />
+						)),
+					)
+					.with({ status: "success" }, () =>
+						filtered && filtered.length > 0 ? (
+							filtered.map((recipe) => (
+								<RecipeCard key={recipe.title} recipe={recipe} />
+							))
+						) : (
+							<div className="col-span-full flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
+								<UtensilsCrossed className="w-14 h-14 text-orange-200" />
+								<p className="text-lg font-medium">Nessuna ricetta trovata</p>
+								<p className="text-sm">Prova con un altro termine di ricerca</p>
+							</div>
+						),
+					)
+					.exhaustive()}
+			</div>
+		</div>
+	);
 }
