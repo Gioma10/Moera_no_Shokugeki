@@ -1,10 +1,10 @@
 {
-	"recommendations": [
-		"biomejs.biome",
-		"bradlc.vscode-tailwindcss",
-		"eamodio.gitlens",
-		"esbenp.prettier-vscode",
-		"lokalise.i18n-ally",
-		"Orta.vscode-twoslash-queries"
-	]
+  "recommendations": [
+    "biomejs.biome",
+    "bradlc.vscode-tailwindcss",
+    "eamodio.gitlens",
+    "esbenp.prettier-vscode",
+    "lokalise.i18n-ally",
+    "Orta.vscode-twoslash-queries"
+  ]
 }

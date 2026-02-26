@@ -4,32 +4,32 @@ import "./globals.css";
 import { ReactQueryProvider } from "@/components/ReactQueryProvider";
 
 const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-	title: "Moera no Shokugeki",
-	description: "Il ricettario di Moe e Nowy",
+  title: "Moera no Shokugeki",
+  description: "Il ricettario di Moe e Nowy",
 };
 
 export default function RootLayout({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en">
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased bg-linear-to-br from-orange-50 via-white to-rose-50 min-h-screen`}
-			>
-				<ReactQueryProvider>{children}</ReactQueryProvider>
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-linear-to-br from-orange-50 via-white to-rose-50 min-h-screen`}
+      >
+        <ReactQueryProvider>{children}</ReactQueryProvider>
+      </body>
+    </html>
+  );
 }
