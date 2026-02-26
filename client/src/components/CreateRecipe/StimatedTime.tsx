@@ -13,14 +13,14 @@ export const StimatedTime: React.FC<ControllerProps> = ({ name, control }) => {
             <div className="relative">
               <Input
                 type="number"
-                placeholder="Stimated Time"
+                placeholder="Tempo"
                 value={field.value || 0}
                 min={0}
-                step={30} // every time +30
+                step={30}
                 onChange={(e) => field.onChange(Number(e.target.value))}
-                className="pr-12"
+                className="pr-10 bg-muted/40 border-0 focus-visible:ring-1 focus-visible:ring-orange-400"
               />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">
                 min
               </span>
             </div>

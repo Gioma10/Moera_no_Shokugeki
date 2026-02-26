@@ -8,44 +8,41 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
     <FormField
       name={name}
       control={control}
-      render={({ field }) => {
-        console.log(field.value);
-        return (
-          <FormItem>
-            <FormControl>
-              <div className="flex items-center relative w-18 rounded-md shadow-xs">
-                <button
-                  type="button"
-                  onClick={() => field.onChange("cold")}
-                  className={cn(
-                    "py-2 ps-2 pe-5  hover:bg-cyan-300 border border-e-0 h-full top-0 cursor-pointer rounded-s-md absolute left-0 transition-all duration-300",
-                    field.value === "cold" && "bg-cyan-300",
-                  )}
-                  style={{
-                    clipPath: "polygon(0 0, 100% 0, 60% 100%, 0 100%)",
-                  }}
-                >
-                  <SnowflakeIcon size={17} />
-                </button>
+      render={({ field }) => (
+        <FormItem>
+          <FormControl>
+            <div className="flex rounded-xl overflow-hidden border border-muted h-9 w-20 shrink-0">
+              <button
+                type="button"
+                onClick={() => field.onChange("cold")}
+                className={cn(
+                  "flex-1 flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-cyan-100",
+                  field.value === "cold"
+                    ? "bg-cyan-200 text-cyan-700"
+                    : "text-muted-foreground",
+                )}
+              >
+                <SnowflakeIcon size={15} />
+              </button>
 
-                <button
-                  type="button"
-                  onClick={() => field.onChange("hot")}
-                  className={cn(
-                    "pe-2 ps-5 py-2 hover:bg-red-300 border border-s-0 top-0 cursor-pointer  h-full rounded-e-md absolute right-0 transition-all duration-300",
-                    field.value === "hot" && "bg-red-300",
-                  )}
-                  style={{
-                    clipPath: "polygon(40% 0, 100% 0, 100% 100%, 0 100%)",
-                  }}
-                >
-                  <FlameIcon size={17} />
-                </button>
-              </div>
-            </FormControl>
-          </FormItem>
-        );
-      }}
+              <div className="w-px bg-muted" />
+
+              <button
+                type="button"
+                onClick={() => field.onChange("hot")}
+                className={cn(
+                  "flex-1 flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-red-100",
+                  field.value === "hot"
+                    ? "bg-red-200 text-red-600"
+                    : "text-muted-foreground",
+                )}
+              >
+                <FlameIcon size={15} />
+              </button>
+            </div>
+          </FormControl>
+        </FormItem>
+      )}
     />
   );
 };

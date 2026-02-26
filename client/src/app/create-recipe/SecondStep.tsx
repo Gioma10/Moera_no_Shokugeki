@@ -15,25 +15,30 @@ export const SecondStep = ({
   form: UseFormReturn<z.infer<typeof RecipeSchema>>;
 }) => {
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex gap-10">
+    <div className="flex flex-col gap-4">
+
+      {/* Top section — Ingredients + Category/Time/Temp */}
+      <div className="flex flex-col sm:flex-row gap-4">
         {/* Ingredients */}
-        <AddIngredient name="ingredients" control={form.control} />
+        <div className="flex-1">
+          <AddIngredient name="ingredients" control={form.control} />
+        </div>
 
-        <div className="flex flex-col gap-2">
-          {/* Category */}
-          <Category name="category" control={form.control} />
-
-          <div className="flex gap-2">
-            {/* Stimated Time  */}
-            <StimatedTime name="stimatedTime" control={form.control} />
-
-            {/* Temperature */}
+        {/* Category + Time + Temperature */}
+        <div className="flex flex-row sm:flex-col gap-2 sm:w-48">
+          <div className="flex-1 sm:flex-none">
+            <Category name="category" control={form.control} />
+          </div>
+          <div className="flex gap-2 items-center">
+            <div className="flex-1">
+              <StimatedTime name="stimatedTime" control={form.control} />
+            </div>
             <Temperature name="temperature" control={form.control} />
           </div>
         </div>
       </div>
 
+      {/* Ingredients list */}
       <PreviewIngredients name="ingredients" control={form.control} />
     </div>
   );
