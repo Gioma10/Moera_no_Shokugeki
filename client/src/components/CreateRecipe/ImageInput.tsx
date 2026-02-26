@@ -1,6 +1,6 @@
 "use client";
 
-import { XIcon } from "lucide-react";
+import { ImageIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
 import { useRef } from "react";
@@ -20,8 +20,6 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
         const preview = field.value ? URL.createObjectURL(field.value) : null;
         const removeImage = (field: ControllerRenderProps) => {
           field.onChange(null);
-
-          // resettare il valore dell'input per poter selezionare lo stesso file
           if (inputRef.current) {
             inputRef.current.value = "";
           }
@@ -30,34 +28,33 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
         return (
           <FormItem>
             <FormControl>
-              <div className=" relative w-30 h-30 sm:w-40 sm:h-40 md:w-60 md:h-60 border rounded-lg group">
-                {preview && (
-                  <Image
-                    src={preview}
-                    alt="Preview"
-                    fill
-                    unoptimized
-                    className="mb-4 object-contain rounded-lg"
-                  />
-                )}
-                {preview && (
-                  <button
-                    type="button"
-                    onClick={() => removeImage(field)}
-                    className="border border-primary rounded-3xl p-1 bg-white absolute right-0 top-0 -translate-y-1/2 translate-x-1/2 hidden group-hover:block cursor-pointer hover:bg-red-500"
+              <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-48 md:h-48 shrink-0 rounded-2xl border-2 border-dashed border-muted-foreground/30 bg-muted/30 group overflow-hidden">
+                {preview ? (
+                  <>
+                    <Image
+                      src={preview}
+                      alt="Preview"
+                      fill
+                      unoptimized
+                      className="object-cover rounded-2xl"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(field)}
+                      className="absolute top-1 right-1 z-10 bg-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:bg-red-500 hover:text-white"
+                    >
+                      <XIcon size={12} />
+                    </button>
+                  </>
+                ) : (
+                  <label
+                    htmlFor="file"
+                    className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer gap-2 text-muted-foreground hover:text-orange-500 transition-colors"
                   >
-                    <XIcon size={15} />
-                  </button>
+                    <ImageIcon className="w-6 h-6 sm:w-8 sm:h-8" />
+                    <span className="text-xs font-medium">Foto</span>
+                  </label>
                 )}
-
-                <label
-                  htmlFor="file"
-                  className={`absolute top-0 w-full h-full flex items-center justify-center cursor-pointer ${
-                    preview ? "pointer-events-none" : ""
-                  }`}
-                >
-                  {preview ? "" : "Add"}
-                </label>
                 <input
                   id="file"
                   ref={inputRef}

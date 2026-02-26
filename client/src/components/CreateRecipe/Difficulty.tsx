@@ -4,35 +4,40 @@ import { Button } from "../ui/button";
 
 export const Difficulty: React.FC<ControllerProps> = ({ name, control }) => {
   const levels = [
-    { color: "green", label: "easy" },
-    { color: "yellow", label: "medium" },
-    { color: "red", label: "hard" },
-    { color: "black", label: "impossible" },
+    { label: "easy", color: "text-emerald-600" },
+    { label: "medium", color: "text-amber-500" },
+    { label: "hard", color: "text-rose-500" },
+    { label: "impossible", color: "text-gray-900" },
   ];
 
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field }) => {
-        return (
-          <div className="grid grid-cols-2 gap-2">
+      render={({ field }) => (
+        <div className="flex flex-col gap-1">
+          <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
+            Difficoltà
+          </span>
+          <div className="grid grid-cols-2 gap-1.5">
             {levels.map((lv) => (
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => field.onChange(lv.label)}
-                className={` ${
-                  field.value === lv.label ? "border-2" : "opacity-40 "
-                } cursor-pointer border-primary md:text-base md:p-5 sm:text-sm sm:p-2 text-xs p-1`}
+                className={`text-xs py-1.5 h-auto cursor-pointer transition-all ${
+                  field.value === lv.label
+                    ? `border-2 border-primary font-semibold ${lv.color}`
+                    : "opacity-50"
+                }`}
                 key={lv.label}
               >
                 {lv.label}
               </Button>
             ))}
           </div>
-        );
-      }}
+        </div>
+      )}
     />
   );
 };

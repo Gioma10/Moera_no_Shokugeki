@@ -21,10 +21,10 @@ export const FirstStep = ({
 }) => {
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col sm:flex-row gap-6 items-start">
+      <div className="flex flex-row gap-4 items-start">
         <ImageInput name="image" control={form.control} />
 
-        <div className="flex flex-col gap-5 flex-1">
+        <div className="flex flex-col gap-4 flex-1 min-w-0">
           <RatingInput name="rating" control={form.control} />
           <Difficulty name="difficulty" control={form.control} />
         </div>
@@ -37,7 +37,7 @@ export const FirstStep = ({
           <FormItem>
             <FormControl>
               <Input
-                className="rounded-xl py-5 sm:py-6 bg-muted/40 border-0 focus-visible:ring-1 focus-visible:ring-orange-400 text-base"
+                className="rounded-xl py-5 bg-muted/40 border-0 focus-visible:ring-1 focus-visible:ring-orange-400 text-base"
                 placeholder="Nome della ricetta..."
                 {...field}
               />
