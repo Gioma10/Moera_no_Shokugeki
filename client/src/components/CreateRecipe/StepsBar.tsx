@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import type { Step } from "@/app/create-recipe/page";
+import type { Step } from "@/app/(chef)/create-recipe/page";
 
 const STEPS = [
   { number: 1, label: "Info" },
