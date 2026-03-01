@@ -1,11 +1,10 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { onAuthStateChanged, type User } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import { usePathname, useRouter } from "next/navigation";
+import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "@/lib/firebase";
-import { setAuthCookie, removeAuthCookie } from "@/lib/cookies";
-import { useRouter, usePathname } from "next/navigation";
 
 export type Role = "admin" | "approved" | "pending" | "rejected";
 
@@ -30,33 +29,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: User | null) => {
-      if (firebaseUser) {
-        const token = await firebaseUser.getIdToken();
-        setAuthCookie(token);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (firebaseUser: User | null) => {
+        if (firebaseUser) {
+          const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
+          const data = userDoc.data();
+          const role: Role = data?.role ?? "pending";
 
-        const userDoc = await getDoc(doc(db, "users", firebaseUser.uid));
-        const data = userDoc.data();
-        const role: Role = data?.role ?? "pending";
+          setCurrentUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email,
+            displayName: firebaseUser.displayName,
+            role,
+          });
 
-        setCurrentUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName,
-          role,
-        });
+          redirectByRole(role, pathname, router);
+        } else {
+          setCurrentUser(null);
+        }
 
-        redirectByRole(role, pathname, router);
-      } else {
-        removeAuthCookie();
-        setCurrentUser(null);
-      }
-
-      setLoading(false);
-    });
+        setLoading(false);
+      },
+    );
 
     return () => unsubscribe();
-  }, []);
+  }, [pathname, router]);
 
   return (
     <AuthContext.Provider value={{ currentUser, loading }}>
@@ -68,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 function redirectByRole(
   role: Role,
   pathname: string,
-  router: ReturnType<typeof useRouter>
+  router: ReturnType<typeof useRouter>,
 ) {
   switch (role) {
     case "admin":

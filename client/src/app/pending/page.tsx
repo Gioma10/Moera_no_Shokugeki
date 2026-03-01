@@ -1,8 +1,8 @@
 "use client";
 
 import { UtensilsCrossed } from "lucide-react";
-import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { auth } from "@/lib/firebase";
 
 export default function PendingPage() {
   const router = useRouter();
@@ -31,6 +31,7 @@ export default function PendingPage() {
           Attendi che l'admin approvi il tuo account.
         </p>
         <button
+          type="button"
           onClick={handleLogout}
           className="text-xs text-orange-500 hover:underline mt-2"
         >
@@ -38,7 +39,9 @@ export default function PendingPage() {
         </button>
       </div>
 
-      <p className="text-xs text-muted-foreground mt-10">Made with ❤️ by Gioma</p>
+      <p className="text-xs text-muted-foreground mt-10">
+        Made with ❤️ by Gioma
+      </p>
     </div>
   );
 }

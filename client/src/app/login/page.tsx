@@ -1,24 +1,24 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import {
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Loader2,
+  UtensilsCrossed,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  UtensilsCrossed,
-  ArrowRight,
-  Loader2,
-  Eye,
-  EyeOff,
-} from "lucide-react";
-import {
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  updateProfile,
-} from "firebase/auth";
-import { doc, setDoc, serverTimestamp } from "firebase/firestore";
-import { auth, db } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 import {
   Form,
@@ -29,7 +29,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { auth, db } from "@/lib/firebase";
 
 // ─── Schemi Zod ───────────────────────────────────────────────────────────────
 
@@ -91,11 +91,14 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-email`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        },
+      );
       const { exists } = await res.json();
       setEmail(email);
       setStep(exists ? "login" : "register");

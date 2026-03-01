@@ -1,4 +1,4 @@
-import { initializeApp, getApps } from "firebase/app";
+import { getApps, initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
@@ -13,7 +13,8 @@ const firebaseConfig = {
 };
 
 // Evita di inizializzare più volte in Next.js (hot reload)
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const app =
+  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 
 const auth = getAuth(app);
 const db = getFirestore(app);

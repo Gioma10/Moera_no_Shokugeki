@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import { match } from "ts-pattern";
-import { useAuth, type AuthUser, type Role } from "@/context/AuthContext";
+import { type AuthUser, type Role, useAuth } from "@/context/AuthContext";
 
 export const AssertAuthenticated = ({
   children,

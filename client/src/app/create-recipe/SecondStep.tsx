@@ -16,7 +16,6 @@ export const SecondStep = ({
 }) => {
   return (
     <div className="flex flex-col gap-4">
-
       {/* Top section — Ingredients + Category/Time/Temp */}
       <div className="flex flex-col sm:flex-row gap-4">
         {/* Ingredients */}

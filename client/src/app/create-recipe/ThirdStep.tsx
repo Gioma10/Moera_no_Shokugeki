@@ -2,7 +2,10 @@ import type { UseFormReturn } from "react-hook-form";
 import type z from "zod";
 import { Master } from "@/components/CreateRecipe/Master";
 import { Method } from "@/components/CreateRecipe/Method";
-import { Note, Preparation } from "@/components/CreateRecipe/PreparationAndNote";
+import {
+  Note,
+  Preparation,
+} from "@/components/CreateRecipe/PreparationAndNote";
 import type { RecipeSchema } from "@/types/recipes";
 
 export const ThirdStep = ({
@@ -12,7 +15,6 @@ export const ThirdStep = ({
 }) => {
   return (
     <div className="flex flex-col w-full gap-4">
-
       {/* Preparation + Note */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">

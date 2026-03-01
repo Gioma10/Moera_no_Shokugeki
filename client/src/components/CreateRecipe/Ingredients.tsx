@@ -18,7 +18,8 @@ import {
 } from "../ui/select";
 
 export const AddIngredient: React.FC<ControllerProps> = ({ name, control }) => {
-  const [ingredient, setIngredient] = useState<IngredientData["ingredient"]>("");
+  const [ingredient, setIngredient] =
+    useState<IngredientData["ingredient"]>("");
   const [quantity, setQuantity] = useState<IngredientData["quantity"]>("");
   const [unit, setUnit] = useState<IngredientData["unit"]>("q.b.");
 
@@ -99,7 +100,10 @@ export const AddIngredient: React.FC<ControllerProps> = ({ name, control }) => {
   );
 };
 
-export const PreviewIngredients: React.FC<ControllerProps> = ({ name, control }) => {
+export const PreviewIngredients: React.FC<ControllerProps> = ({
+  name,
+  control,
+}) => {
   const onDelete = (i: number, field: ControllerRenderProps) => {
     const newList = field.value.filter(
       (_: IngredientData, index: number) => i !== index,
@@ -119,7 +123,9 @@ export const PreviewIngredients: React.FC<ControllerProps> = ({ name, control })
                 Ingredienti aggiunti
               </h3>
               {!field.value || field.value.length === 0 ? (
-                <p className="text-muted-foreground text-sm">Nessun ingrediente...</p>
+                <p className="text-muted-foreground text-sm">
+                  Nessun ingrediente...
+                </p>
               ) : (
                 <ul className="space-y-1">
                   {(field.value || []).map((ing: IngredientData, i: number) => (
@@ -132,9 +138,13 @@ export const PreviewIngredients: React.FC<ControllerProps> = ({ name, control })
                     >
                       <DotX />
                       <div className="flex-1 flex gap-2 items-baseline">
-                        <span className="text-sm font-medium">{ing.ingredient}</span>
+                        <span className="text-sm font-medium">
+                          {ing.ingredient}
+                        </span>
                         <span className="text-xs text-muted-foreground">
-                          {ing.unit === "q.b." ? ing.unit : `${ing.quantity}${ing.unit}`}
+                          {ing.unit === "q.b."
+                            ? ing.unit
+                            : `${ing.quantity}${ing.unit}`}
                         </span>
                       </div>
                     </motion.li>

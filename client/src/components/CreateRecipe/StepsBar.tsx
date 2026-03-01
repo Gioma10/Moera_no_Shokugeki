@@ -23,7 +23,10 @@ export const StepsBar = ({ step }: { step: Step }) => {
         const isActive = i === current;
 
         return (
-          <div key={s.number} className="flex items-center flex-1 last:flex-none">
+          <div
+            key={s.number}
+            className="flex items-center flex-1 last:flex-none"
+          >
             {/* Circle */}
             <div className="flex flex-col items-center gap-1">
               <div className="relative w-9 h-9">
@@ -36,7 +39,14 @@ export const StepsBar = ({ step }: { step: Step }) => {
                   }`}
                 >
                   {isCompleted ? (
-                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={3} aria-hidden="true">
+                    <svg
+                      className="w-4 h-4"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                      aria-hidden="true"
+                    >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   ) : (
@@ -49,15 +59,24 @@ export const StepsBar = ({ step }: { step: Step }) => {
                   <motion.div
                     className="absolute inset-0 rounded-full border-2 border-orange-400"
                     animate={{ scale: [1, 1.3, 1], opacity: [1, 0, 1] }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY }}
+                    transition={{
+                      duration: 2,
+                      repeat: Number.POSITIVE_INFINITY,
+                    }}
                   />
                 )}
               </div>
 
               {/* Label */}
-              <span className={`text-xs font-medium transition-colors duration-300 ${
-                isActive ? "text-orange-500" : isCompleted ? "text-orange-400" : "text-muted-foreground/50"
-              }`}>
+              <span
+                className={`text-xs font-medium transition-colors duration-300 ${
+                  isActive
+                    ? "text-orange-500"
+                    : isCompleted
+                      ? "text-orange-400"
+                      : "text-muted-foreground/50"
+                }`}
+              >
                 {s.label}
               </span>
             </div>
