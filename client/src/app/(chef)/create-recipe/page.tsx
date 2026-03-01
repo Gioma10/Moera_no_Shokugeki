@@ -65,7 +65,9 @@ const CreateRecipe = () => {
   const goNext = async () => {
     const isValid = await form.trigger(stepFields[step]);
     if (!isValid) return;
-    setStep((prev) => steps[Math.min(steps.indexOf(prev) + 1, steps.length - 1)]);
+    setStep(
+      (prev) => steps[Math.min(steps.indexOf(prev) + 1, steps.length - 1)],
+    );
   };
 
   const goPrev = () =>
@@ -90,7 +92,6 @@ const CreateRecipe = () => {
 
   return (
     <div className="min-h-screen px-4 py-10 flex flex-col items-center gap-8">
-
       {/* Header */}
       <div className="flex items-center gap-4 w-full max-w-3xl">
         <Link

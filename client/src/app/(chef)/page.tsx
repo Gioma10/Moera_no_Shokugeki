@@ -1,10 +1,17 @@
 "use client";
 
-import { ChefHat, PlusCircle, UtensilsCrossed, LogOut, User } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import {
+  ChefHat,
+  LogOut,
+  PlusCircle,
+  ShieldCheck,
+  User,
+  UtensilsCrossed,
+} from "lucide-react";
 import Link from "next/link";
-import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,30 +20,69 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/AuthContext";
+import { auth } from "@/lib/firebase";
+
+async function getPendingCount(token: string) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users/pending`,
+    {
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  const data = await res.json();
+  return data.length as number;
+}
 
 export default function Home() {
   const router = useRouter();
   const authState = useAuth();
+  const [token, setToken] = useState<string | null>(null);
+
+  const user = authState.status === "authenticated" ? authState.user : null;
+  const isAdmin = user?.role === "admin";
+
+  useEffect(() => {
+    if (isAdmin) {
+      auth.currentUser?.getIdToken().then(setToken);
+    }
+  }, [isAdmin]);
+
+  const { data: pendingCount } = useQuery({
+    queryKey: ["pending-users-count"],
+    queryFn: () => getPendingCount(token as string),
+    enabled: isAdmin && !!token,
+    refetchInterval: 30_000,
+  });
 
   async function handleLogout() {
     await auth.signOut();
     router.replace("/login");
   }
 
-  const user = authState.status === "authenticated" ? authState.user : null;
+  const hasPending = isAdmin && !!pendingCount && pendingCount > 0;
+  const badgeLabel =
+    pendingCount && pendingCount > 9 ? "9+" : String(pendingCount);
 
   return (
     <div className="page-bg flex flex-col items-center justify-center px-4">
-
       {/* Profile icon top right */}
       <div className="absolute top-4 right-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="page-card p-2.5 rounded-full hover:shadow-md transition-all duration-200">
+            <button
+              type="button"
+              className="relative page-card p-2.5 rounded-full hover:shadow-md transition-all duration-200"
+            >
               <User className="w-5 h-5 text-brand" />
+              {hasPending && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {badgeLabel}
+                </span>
+              )}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent align="end" className="w-52">
             <DropdownMenuLabel className="page-description font-normal">
               {user?.email}
             </DropdownMenuLabel>
@@ -44,6 +90,29 @@ export default function Home() {
               {user?.displayName}
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
+
+            {isAdmin && (
+              <>
+                <DropdownMenuItem asChild>
+                  <Link
+                    href="/admin/users"
+                    className="cursor-pointer flex items-center justify-between"
+                  >
+                    <span className="flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4" />
+                      Revisiona utenti
+                    </span>
+                    {hasPending && (
+                      <span className="bg-red-500 text-white text-[10px] font-bold rounded-full px-1.5 py-0.5">
+                        {badgeLabel}
+                      </span>
+                    )}
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
+            )}
+
             <DropdownMenuItem
               onClick={handleLogout}
               className="text-red-500 cursor-pointer focus:text-red-500"
@@ -60,7 +129,6 @@ export default function Home() {
         <div className="bg-brand-light rounded-full p-4 sm:p-6 shadow-inner">
           <UtensilsCrossed className="w-10 h-10 sm:w-14 sm:h-14 text-brand" />
         </div>
-
         <div className="space-y-3 flex flex-col items-center">
           <h1 className="page-title">
             Moera <span className="page-title-accent">No Shokugeki</span>
@@ -79,7 +147,9 @@ export default function Home() {
               <ChefHat className="w-6 h-6 sm:w-8 sm:h-8 text-brand" />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-gray-900 text-sm sm:text-base">Ricette</p>
+              <p className="font-semibold text-gray-900 text-sm sm:text-base">
+                Ricette
+              </p>
               <p className="page-description mt-1">Sfoglia il ricettario</p>
             </div>
           </div>
@@ -91,14 +161,17 @@ export default function Home() {
               <PlusCircle className="w-6 h-6 sm:w-8 sm:h-8 text-brand-foreground" />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-brand-foreground text-sm sm:text-base">Crea Ricetta</p>
-              <p className="text-xs text-brand-light mt-1">Aggiungi una nuova ricetta</p>
+              <p className="font-semibold text-brand-foreground text-sm sm:text-base">
+                Crea Ricetta
+              </p>
+              <p className="text-xs text-brand-light mt-1">
+                Aggiungi una nuova ricetta
+              </p>
             </div>
           </div>
         </Link>
       </div>
 
-      {/* Footer */}
       <p className="page-footer mt-16">Made with ❤️ by Gioma</p>
     </div>
   );

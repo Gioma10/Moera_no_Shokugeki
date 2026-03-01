@@ -90,7 +90,9 @@ export default function Recipes() {
               <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
                 <UtensilsCrossed className="w-14 h-14 text-brand-light" />
                 <p className="text-lg font-medium">Nessuna ricetta trovata</p>
-                <p className="page-description">Prova con un altro termine di ricerca</p>
+                <p className="page-description">
+                  Prova con un altro termine di ricerca
+                </p>
               </div>
             ),
           )

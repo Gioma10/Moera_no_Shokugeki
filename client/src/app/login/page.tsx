@@ -42,7 +42,9 @@ const loginSchema = z.object({
 const registerSchema = z
   .object({
     displayName: z.string().min(2, "Inserisci il tuo nome (min. 2 caratteri)"),
-    password: z.string().min(6, "La password deve essere di almeno 6 caratteri"),
+    password: z
+      .string()
+      .min(6, "La password deve essere di almeno 6 caratteri"),
     confirmPassword: z.string().min(1, "Conferma la password"),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -117,11 +119,14 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-email`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-email`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        },
+      );
       const { exists } = await res.json();
       setEmail(email);
       setStep(exists ? "login" : "register");
@@ -145,11 +150,18 @@ export default function LoginPage() {
     }
   }
 
-  async function onRegisterSubmit({ displayName, password }: z.infer<typeof registerSchema>) {
+  async function onRegisterSubmit({
+    displayName,
+    password,
+  }: z.infer<typeof registerSchema>) {
     setLoading(true);
     setError(null);
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
       await updateProfile(user, { displayName });
       await setDoc(doc(db, "users", user.uid), {
         email,
@@ -171,7 +183,10 @@ export default function LoginPage() {
         <span className="page-description">{email}</span>
         <button
           type="button"
-          onClick={() => { setStep("email"); setError(null); }}
+          onClick={() => {
+            setStep("email");
+            setError(null);
+          }}
           className="text-xs text-brand hover:underline"
         >
           Cambia
@@ -182,7 +197,6 @@ export default function LoginPage() {
 
   return (
     <div className="page-bg flex flex-col items-center justify-center px-4">
-
       {/* Logo */}
       <div className="flex flex-col items-center gap-4 text-center mb-10">
         <div className="bg-brand-light rounded-full p-5 shadow-inner">
@@ -202,26 +216,43 @@ export default function LoginPage() {
 
       {/* Card */}
       <div className="page-card w-full max-w-sm p-8 space-y-6">
-
         {/* Step 1 — Email */}
         {step === "email" && (
           <Form {...emailForm}>
-            <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4">
+            <form
+              onSubmit={emailForm.handleSubmit(onEmailSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={emailForm.control}
                 name="email"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="tu@email.com" type="email" autoFocus {...field} />
+                      <Input
+                        placeholder="tu@email.com"
+                        type="email"
+                        autoFocus
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="btn-brand w-full" disabled={loading}>
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Continua <ArrowRight className="w-4 h-4 ml-2" /></>}
+              <Button
+                type="submit"
+                className="btn-brand w-full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <>
+                    Continua <ArrowRight className="w-4 h-4 ml-2" />
+                  </>
+                )}
               </Button>
             </form>
           </Form>
@@ -230,7 +261,10 @@ export default function LoginPage() {
         {/* Step 2a — Login */}
         {step === "login" && (
           <Form {...loginForm}>
-            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+            <form
+              onSubmit={loginForm.handleSubmit(onLoginSubmit)}
+              className="space-y-4"
+            >
               <EmailRow />
               <FormField
                 control={loginForm.control}
@@ -251,8 +285,16 @@ export default function LoginPage() {
                 )}
               />
               {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="btn-brand w-full" disabled={loading}>
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Accedi"}
+              <Button
+                type="submit"
+                className="btn-brand w-full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Accedi"
+                )}
               </Button>
             </form>
           </Form>
@@ -261,7 +303,10 @@ export default function LoginPage() {
         {/* Step 2b — Register */}
         {step === "register" && (
           <Form {...registerForm}>
-            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+            <form
+              onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
+              className="space-y-4"
+            >
               <EmailRow />
               <FormField
                 control={registerForm.control}
@@ -310,8 +355,16 @@ export default function LoginPage() {
                 )}
               />
               {error && <p className="text-sm text-destructive">{error}</p>}
-              <Button type="submit" className="btn-brand w-full" disabled={loading}>
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Crea account"}
+              <Button
+                type="submit"
+                className="btn-brand w-full"
+                disabled={loading}
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Crea account"
+                )}
               </Button>
             </form>
           </Form>

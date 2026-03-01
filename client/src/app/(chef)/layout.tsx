@@ -1,5 +1,5 @@
-import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
+import { Suspense } from "react";
 import { AssertAuthenticated } from "@/components/auth/AssertAuthenticated";
 import { RedirectToLogin } from "@/components/auth/RedirectToLogin";
 
