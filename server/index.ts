@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import { db } from "./firebase.ts";
+import { admin, db } from "./firebase.ts";
 import multer from "multer";
 import cloudinary from "./cloudinaryConfig.ts";
 
@@ -16,6 +16,13 @@ const PORT = 8080;
 // app.get("/api/home", (req, res) => {
 //   res.json({ message: "Hello" });
 // });
+
+// Check email
+app.post("/api/auth/check-email", async (req, res) => {
+  const { email } = req.body;
+  const user = await admin.auth().getUserByEmail(email).catch(() => null);
+  res.json({ exists: !!user });
+});
 
 // Get Recipes
 app.get("/api/recipes", async (req, res) => {

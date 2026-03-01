@@ -4,9 +4,14 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { UtensilsCrossed, ArrowRight, Loader2 } from "lucide-react";
 import {
-  fetchSignInMethodsForEmail,
+  UtensilsCrossed,
+  ArrowRight,
+  Loader2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
+import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   updateProfile,
@@ -36,10 +41,18 @@ const loginSchema = z.object({
   password: z.string().min(1, "Inserisci la password"),
 });
 
-const registerSchema = z.object({
-  displayName: z.string().min(2, "Inserisci il tuo nome (min. 2 caratteri)"),
-  password: z.string().min(6, "La password deve essere di almeno 6 caratteri"),
-});
+const registerSchema = z
+  .object({
+    displayName: z.string().min(2, "Inserisci il tuo nome (min. 2 caratteri)"),
+    password: z
+      .string()
+      .min(6, "La password deve essere di almeno 6 caratteri"),
+    confirmPassword: z.string().min(1, "Conferma la password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Le password non coincidono",
+    path: ["confirmPassword"],
+  });
 
 type Step = "email" | "login" | "register";
 
@@ -51,6 +64,9 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // Form Step 1 — Email
   const emailForm = useForm<z.infer<typeof emailSchema>>({
@@ -67,7 +83,7 @@ export default function LoginPage() {
   // Form Step 2b — Register
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { displayName: "", password: "" },
+    defaultValues: { displayName: "", password: "", confirmPassword: "" },
   });
 
   // ── Step 1: controlla se l'email esiste ──────────────────────────────────
@@ -75,11 +91,16 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const methods = await fetchSignInMethodsForEmail(auth, email);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/check-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const { exists } = await res.json();
       setEmail(email);
-      setStep(methods.length > 0 ? "login" : "register");
+      setStep(exists ? "login" : "register");
     } catch {
-      setError("Errore durante il controllo dell'email. Riprova.");
+      setError("Errore durante il controllo. Riprova.");
     } finally {
       setLoading(false);
     }
@@ -91,7 +112,7 @@ export default function LoginPage() {
     setError(null);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push("/recipes");
+      router.push("/");
     } catch {
       setError("Password errata. Riprova.");
     } finally {
@@ -107,7 +128,11 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
     try {
-      const { user } = await createUserWithEmailAndPassword(auth, email, password);
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password,
+      );
 
       await updateProfile(user, { displayName });
 
@@ -120,8 +145,7 @@ export default function LoginPage() {
       });
 
       router.push("/pending");
-    } catch(err) {
-        console.log(err);
+    } catch {
       setError("Errore durante la registrazione. Riprova.");
     } finally {
       setLoading(false);
@@ -151,11 +175,13 @@ export default function LoginPage() {
 
       {/* Card */}
       <div className="w-full max-w-sm bg-white border border-orange-100 rounded-3xl shadow-sm p-8 space-y-6">
-
         {/* Step 1 — Email */}
         {step === "email" && (
           <Form {...emailForm}>
-            <form onSubmit={emailForm.handleSubmit(onEmailSubmit)} className="space-y-4">
+            <form
+              onSubmit={emailForm.handleSubmit(onEmailSubmit)}
+              className="space-y-4"
+            >
               <FormField
                 control={emailForm.control}
                 name="email"
@@ -197,13 +223,19 @@ export default function LoginPage() {
         {/* Step 2a — Login */}
         {step === "login" && (
           <Form {...loginForm}>
-            <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+            <form
+              onSubmit={loginForm.handleSubmit(onLoginSubmit)}
+              className="space-y-4"
+            >
               {/* Email in sola lettura + tasto back */}
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{email}</span>
                 <button
                   type="button"
-                  onClick={() => { setStep("email"); setError(null); }}
+                  onClick={() => {
+                    setStep("email");
+                    setError(null);
+                  }}
                   className="text-xs text-orange-500 hover:underline"
                 >
                   Cambia
@@ -215,14 +247,26 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="••••••••"
-                        type="password"
-                        autoFocus
-                        {...field}
-                      />
+                      <div className="relative">
+                        <Input
+                          placeholder="Password"
+                          type={showLoginPassword ? "text" : "password"}
+                          autoFocus
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowLoginPassword((v) => !v)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-gray-700"
+                        >
+                          {showLoginPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -236,7 +280,11 @@ export default function LoginPage() {
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-2xl"
                 disabled={loading}
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Accedi"}
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Accedi"
+                )}
               </Button>
             </form>
           </Form>
@@ -245,13 +293,19 @@ export default function LoginPage() {
         {/* Step 2b — Register */}
         {step === "register" && (
           <Form {...registerForm}>
-            <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+            <form
+              onSubmit={registerForm.handleSubmit(onRegisterSubmit)}
+              className="space-y-4"
+            >
               {/* Email in sola lettura + tasto back */}
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{email}</span>
                 <button
                   type="button"
-                  onClick={() => { setStep("email"); setError(null); }}
+                  onClick={() => {
+                    setStep("email");
+                    setError(null);
+                  }}
                   className="text-xs text-orange-500 hover:underline"
                 >
                   Cambia
@@ -263,9 +317,8 @@ export default function LoginPage() {
                 name="displayName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome</FormLabel>
                     <FormControl>
-                      <Input placeholder="Il tuo nome" autoFocus {...field} />
+                      <Input placeholder="Nickname" autoFocus {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -277,9 +330,55 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
                     <FormControl>
-                      <Input placeholder="••••••••" type="password" {...field} />
+                      <div className="relative">
+                        <Input
+                          placeholder="Password"
+                          type={showRegisterPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowRegisterPassword((v) => !v)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-gray-700"
+                        >
+                          {showRegisterPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={registerForm.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <div className="relative">
+                        <Input
+                          placeholder="Conferma password"
+                          type={showConfirmPassword ? "text" : "password"}
+                          {...field}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword((v) => !v)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-gray-700"
+                        >
+                          {showConfirmPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -293,14 +392,20 @@ export default function LoginPage() {
                 className="w-full bg-orange-500 hover:bg-orange-600 text-white rounded-2xl"
                 disabled={loading}
               >
-                {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Crea account"}
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Crea account"
+                )}
               </Button>
             </form>
           </Form>
         )}
       </div>
 
-      <p className="text-xs text-muted-foreground mt-10">Made with ❤️ by Gioma</p>
+      <p className="text-xs text-muted-foreground mt-10">
+        Made with ❤️ by Gioma
+      </p>
     </div>
   );
 }
