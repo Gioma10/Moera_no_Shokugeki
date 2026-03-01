@@ -65,9 +65,7 @@ const CreateRecipe = () => {
   const goNext = async () => {
     const isValid = await form.trigger(stepFields[step]);
     if (!isValid) return;
-    setStep(
-      (prev) => steps[Math.min(steps.indexOf(prev) + 1, steps.length - 1)],
-    );
+    setStep((prev) => steps[Math.min(steps.indexOf(prev) + 1, steps.length - 1)]);
   };
 
   const goPrev = () =>
@@ -92,16 +90,17 @@ const CreateRecipe = () => {
 
   return (
     <div className="min-h-screen px-4 py-10 flex flex-col items-center gap-8">
+
       {/* Header */}
       <div className="flex items-center gap-4 w-full max-w-3xl">
         <Link
           href="/"
-          className="flex-none border-2 rounded-full p-2 hover:shadow-md transition-shadow bg-white"
+          className="page-card flex-none rounded-full p-2 hover:shadow-md transition-shadow"
         >
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
         <div className="flex items-center gap-2">
-          <UtensilsCrossed className="w-6 h-6 text-orange-500" />
+          <UtensilsCrossed className="w-6 h-6 text-brand" />
           <h1 className="text-2xl font-bold tracking-tight">Nuova Ricetta</h1>
         </div>
       </div>
@@ -109,7 +108,7 @@ const CreateRecipe = () => {
       {/* Step indicator */}
       <div className="w-full max-w-3xl">
         <StepsBar step={step} />
-        <p className="text-sm text-muted-foreground mt-3 text-center font-medium">
+        <p className="page-description mt-3 text-center font-medium">
           {STEP_LABELS[step]}
         </p>
       </div>
@@ -147,7 +146,7 @@ const CreateRecipe = () => {
                 <Button
                   type="submit"
                   disabled={isPending}
-                  className="rounded-full gap-2 bg-orange-500 hover:bg-orange-600"
+                  className="btn-brand rounded-full gap-2"
                 >
                   <CheckIcon className="w-4 h-4" />
                   {isPending ? "Salvataggio..." : "Crea Ricetta"}
@@ -156,7 +155,7 @@ const CreateRecipe = () => {
                 <Button
                   onClick={goNext}
                   type="button"
-                  className="rounded-full gap-2 bg-orange-500 hover:bg-orange-600"
+                  className="btn-brand rounded-full gap-2"
                 >
                   Avanti
                   <ArrowRightIcon className="w-4 h-4" />

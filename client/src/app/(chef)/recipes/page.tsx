@@ -33,7 +33,7 @@ export default function Recipes() {
       <div className="flex items-center gap-4">
         <Link
           href="/"
-          className="flex-none border-2 rounded-full p-2 hover:shadow-md transition-shadow bg-white"
+          className="page-card flex-none p-2 rounded-full hover:shadow-md transition-shadow"
         >
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
@@ -52,11 +52,11 @@ export default function Recipes() {
       {/* Title */}
       <div className="space-y-1">
         <h1 className="text-3xl font-bold flex items-center gap-2">
-          <UtensilsCrossed className="w-7 h-7 text-orange-500" />
+          <UtensilsCrossed className="w-7 h-7 text-brand" />
           Le Ricette
         </h1>
         {recipesQueryResult.status === "success" && (
-          <p className="text-muted-foreground text-sm">
+          <p className="page-description">
             {filtered?.length ?? 0} ricett{filtered?.length === 1 ? "a" : "e"}{" "}
             trovat{filtered?.length === 1 ? "a" : "e"}
           </p>
@@ -88,9 +88,9 @@ export default function Recipes() {
               ))
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
-                <UtensilsCrossed className="w-14 h-14 text-orange-200" />
+                <UtensilsCrossed className="w-14 h-14 text-brand-light" />
                 <p className="text-lg font-medium">Nessuna ricetta trovata</p>
-                <p className="text-sm">Prova con un altro termine di ricerca</p>
+                <p className="page-description">Prova con un altro termine di ricerca</p>
               </div>
             ),
           )
