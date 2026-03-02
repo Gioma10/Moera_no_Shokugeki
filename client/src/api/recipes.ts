@@ -8,8 +8,10 @@ export type RecipeFromServer = {
 };
 
 // Get recipes
-export const getRecipes = async (): Promise<RecipeFromServer[]> => {
-  const res = await fetch(`${BASE_URL}/api/recipes`, {
+export const getRecipes = async (
+  userId: string,
+): Promise<RecipeFromServer[]> => {
+  const res = await fetch(`${BASE_URL}/api/recipes?userId=${userId}`, {
     method: "GET",
   });
 

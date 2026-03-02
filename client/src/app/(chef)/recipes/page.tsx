@@ -14,13 +14,19 @@ import { getRecipes } from "@/api/recipes";
 import { RecipeCard, RecipeCardSkeleton } from "@/components/RecipeCard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Recipes() {
   const [search, setSearch] = useState("");
 
+  const authState = useAuth();
+  const userId =
+    authState.status === "authenticated" ? authState.user.uid : null;
+
   const recipesQueryResult = useQuery({
-    queryKey: ["recipes"],
-    queryFn: getRecipes,
+    queryKey: ["recipes", userId],
+    queryFn: () => getRecipes(userId!),
+    enabled: !!userId,
   });
 
   const filtered = recipesQueryResult.data?.filter((r) =>

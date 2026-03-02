@@ -23,6 +23,7 @@ import { RecipeSchema } from "@/types/recipes";
 import { FirstStep } from "./FirstStep";
 import { SecondStep } from "./SecondStep";
 import { ThirdStep } from "./ThirdStep";
+import { useAuth } from "@/context/AuthContext";
 
 const steps = ["first", "second", "third"] as const;
 export type Step = (typeof steps)[number];
@@ -36,6 +37,10 @@ const STEP_LABELS: Record<Step, string> = {
 const CreateRecipe = () => {
   const [step, setStep] = useState<Step>("first");
   const router = useRouter();
+
+  const authState = useAuth()
+  const userId =
+    authState.status === "authenticated" ? authState.user.uid : null;
 
   const form = useForm({
     resolver: zodResolver(RecipeSchema),
@@ -74,6 +79,8 @@ const CreateRecipe = () => {
     setStep((prev) => steps[Math.max(steps.indexOf(prev) - 1, 0)]);
 
   const onSubmit = (data: z.infer<typeof RecipeSchema>) => {
+    if (!userId) return;
+    
     const payload = new FormData();
     payload.append("image", data.image);
     payload.append("title", data.title);
@@ -87,6 +94,7 @@ const CreateRecipe = () => {
     payload.append("note", data.note ?? "");
     payload.append("method", data.method);
     payload.append("master", data.master);
+    payload.append("userId", userId)
     onCreate(payload);
   };
 
