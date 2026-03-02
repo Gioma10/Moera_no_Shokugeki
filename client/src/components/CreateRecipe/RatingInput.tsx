@@ -11,7 +11,7 @@ export const RatingInput: React.FC<ControllerProps> = ({ control, name }) => {
         return (
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
-              Difficoltà
+              Voto
             </span>
             <div className="flex gap-1">
               {Array.from({ length: 5 }, (_, i) => {

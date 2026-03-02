@@ -38,7 +38,7 @@ const CreateRecipe = () => {
   const [step, setStep] = useState<Step>("first");
   const router = useRouter();
 
-  const authState = useAuth()
+  const authState = useAuth();
   const userId =
     authState.status === "authenticated" ? authState.user.uid : null;
 
@@ -80,7 +80,7 @@ const CreateRecipe = () => {
 
   const onSubmit = (data: z.infer<typeof RecipeSchema>) => {
     if (!userId) return;
-    
+
     const payload = new FormData();
     payload.append("image", data.image);
     payload.append("title", data.title);
@@ -94,7 +94,7 @@ const CreateRecipe = () => {
     payload.append("note", data.note ?? "");
     payload.append("method", data.method);
     payload.append("master", data.master);
-    payload.append("userId", userId)
+    payload.append("userId", userId);
     onCreate(payload);
   };
 
