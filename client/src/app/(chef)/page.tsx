@@ -41,6 +41,7 @@ export default function Home() {
 
   const user = authState.status === "authenticated" ? authState.user : null;
   const isAdmin = user?.role === "admin";
+  const userName = user?.displayName;
 
   useEffect(() => {
     if (isAdmin) {
@@ -134,7 +135,7 @@ export default function Home() {
             Moera <span className="page-title-accent">No Shokugeki</span>
           </h1>
           <p className="page-subtitle max-w-sm">
-            Tutte le ricette di Moe e Nowy in un unico posto.
+            Tutte le ricette di {userName} in un unico posto.
           </p>
         </div>
       </div>
