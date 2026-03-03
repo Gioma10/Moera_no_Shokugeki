@@ -10,7 +10,9 @@ import type { RecipeSchema } from "@/types/recipes";
 
 export const ThirdStep = ({
   form,
+  isAdmin,
 }: {
+  isAdmin: boolean;
   form: UseFormReturn<z.infer<typeof RecipeSchema>>;
 }) => {
   return (
@@ -30,9 +32,11 @@ export const ThirdStep = ({
         <div className="flex-1 w-full">
           <Method name="method" control={form.control} />
         </div>
-        <div className="shrink-0">
-          <Master name="master" control={form.control} />
-        </div>
+        {isAdmin && (
+          <div className="shrink-0">
+            <Master name="master" control={form.control} />
+          </div>
+        )}
       </div>
     </div>
   );

@@ -42,6 +42,8 @@ const CreateRecipe = () => {
   const userId =
     authState.status === "authenticated" ? authState.user.uid : null;
 
+  const isAdmin = authState.user?.role === "admin"
+
   const form = useForm({
     resolver: zodResolver(RecipeSchema),
     mode: "onChange",
@@ -93,7 +95,7 @@ const CreateRecipe = () => {
     payload.append("preparation", data.preparation);
     payload.append("note", data.note ?? "");
     payload.append("method", data.method);
-    payload.append("master", data.master);
+    payload.append("master", data.master ?? "");
     payload.append("userId", userId);
     onCreate(payload);
   };
@@ -132,7 +134,7 @@ const CreateRecipe = () => {
             {match(step)
               .with("first", () => <FirstStep form={form} />)
               .with("second", () => <SecondStep form={form} />)
-              .with("third", () => <ThirdStep form={form} />)
+              .with("third", () => <ThirdStep form={form} isAdmin={isAdmin} />)
               .exhaustive()}
 
             {/* Navigation */}
