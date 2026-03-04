@@ -9,18 +9,34 @@ const upload = multer({ storage: multer.memoryStorage() });
 // Get Recipes
 router.get("/", async (req, res) => {
   try {
-    const { userId } = req.query;
+    const { userId, limit: limitParam, cursor } = req.query;
+    const limit = parseInt(limitParam as string) || 12;
 
-    const snapshot = userId
-      ? await db.collection("recipes").where("userId", "==", userId).get()
-      : await db.collection("recipes").get();
+    if (!userId) return res.status(400).json({ error: "Missing userId" });
 
-    const recipes = snapshot.docs.map((doc) => {
-      return { id: doc.id, ...doc.data() };
+    let query = db
+      .collection("recipes")
+      .where("userId", "==", userId)
+      .orderBy("title", "asc")
+      .limit(limit + 1);
+
+    if (cursor) {
+      const docRef = await db.collection("recipes").doc(cursor as string).get();
+      query = query.startAfter(docRef);
+    }
+
+    const snapshot = await query.get();
+    const hasMore = snapshot.docs.length > limit;
+    const docs = snapshot.docs.slice(0, limit);
+
+    res.status(200).json({
+      items: docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+      next: hasMore ? docs.at(-1)?.id : undefined,
+      count: docs.length,
+      limit,
     });
-    // console.log(recipes);
-    res.status(200).json(recipes);
   } catch (error) {
+    console.error("Recipes error:", error);
     res.status(500).json({ error: "Error on recipes visualization" });
   }
 });

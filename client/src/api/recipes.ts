@@ -6,18 +6,31 @@ export type RecipeFromServer = {
   id: string;
   title: string;
   description: string;
-  image: string; // URL di Cloudinary
+  image: string;
   ingredients: IngredientData[];
+  rating: number;
+  category: "firstCourse" | "secondCourse" | "dessert" | "starter";
+  master?: "moe" | "nowy";
+  difficulty: string;
+  stimatedTime: number;
+};
+
+export type RecipesPage = {
+  items: RecipeFromServer[];
+  next: string | undefined;
+  count: number;
+  limit: number;
 };
 
 // Get recipes
 export const getRecipes = async (
   userId: string,
-): Promise<RecipeFromServer[]> => {
-  const res = await fetch(`${BASE_URL}/api/recipes?userId=${userId}`, {
-    method: "GET",
-  });
-
+  cursor?: string,
+  limit = 12,
+): Promise<RecipesPage> => {
+  const params = new URLSearchParams({ userId, limit: String(limit) });
+  if (cursor) params.append("cursor", cursor);
+  const res = await fetch(`${BASE_URL}/api/recipes?${params}`);
   if (!res.ok) throw new Error("Errore on recipes visualization");
   return res.json();
 };
