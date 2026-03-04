@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function ShoppingListPanel() {
+  const [activeTab, setActiveTab] = useState<"ingredients" | "recipes">(
+    "ingredients",
+  );
   const {
     selectedRecipes,
     mergedIngredients,
@@ -46,6 +49,119 @@ export function ShoppingListPanel() {
         >
           <X className="w-4 h-4 text-muted-foreground" />
         </button>
+      </div>
+      
+      {/* Tabs */}
+      <div className="flex border-b shrink-0">
+        <button
+          onClick={() => setActiveTab("ingredients")}
+          className={cn(
+            "flex-1 text-sm py-2 font-medium transition-colors",
+            activeTab === "ingredients"
+              ? "border-b-2 border-brand text-brand"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Ingredienti
+          {!isEmpty && (
+            <span className="ml-1.5 text-xs bg-muted rounded-full px-1.5 py-0.5">
+              {mergedIngredients.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab("recipes")}
+          className={cn(
+            "flex-1 text-sm py-2 font-medium transition-colors",
+            activeTab === "recipes"
+              ? "border-b-2 border-brand text-brand"
+              : "text-muted-foreground hover:text-foreground",
+          )}
+        >
+          Ricette
+          {!isEmpty && (
+            <span className="ml-1.5 text-xs bg-muted rounded-full px-1.5 py-0.5">
+              {selectedRecipes.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Contenuto */}
+      <div className="flex-1 overflow-y-auto px-4 py-2">
+        {isEmpty ? (
+          <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground py-8">
+            <ShoppingCart className="w-10 h-10 opacity-30" />
+            <p className="text-sm text-center">
+              Clicca <strong>+</strong> su una ricetta per iniziare
+            </p>
+          </div>
+        ) : activeTab === "ingredients" ? (
+          <ul className="divide-y divide-border/50">
+            {mergedIngredients.map((item, i) => (
+              <li
+                key={`${item.ingredient}-${i}`}
+                className="flex items-center justify-between py-2 gap-2"
+              >
+                <span className="text-sm font-medium">{item.ingredient}</span>
+                <span className="text-sm text-muted-foreground shrink-0">
+                  {item.quantity !== null ? (
+                    <>
+                      <span className="text-foreground font-semibold">
+                        {item.quantity}
+                      </span>{" "}
+                      {item.unit}
+                    </>
+                  ) : (
+                    <span className="italic text-xs">q.b.</span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="divide-y divide-border/50">
+            {selectedRecipes.map((recipe) => (
+              <li
+                key={recipe.title}
+                className="flex items-center justify-between py-2 gap-2"
+              >
+                <span className="text-sm font-medium">{recipe.title}</span>
+                <button
+                  onClick={() => removeRecipe(recipe.title)}
+                  className="p-1 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 py-3 border-t flex gap-2 shrink-0">
+        <Button
+          variant="outline"
+          size="sm"
+          className="flex-1 gap-1"
+          onClick={clearAll}
+          disabled={isEmpty}
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          Svuota
+        </Button>
+        <Button
+          size="sm"
+          className="flex-1 gap-1"
+          onClick={() => {
+            /* lo gestiamo dopo */
+          }}
+          disabled={isEmpty}
+        >
+          <Save className="w-3.5 h-3.5" />
+          Salva lista
+        </Button>
       </div>
     </div>
   );
