@@ -6,20 +6,34 @@ const router = Router();
 // Get all shopping lists by userId
 router.get("/", async (req, res) => {
   try {
-    const { userId } = req.query;
+    const { userId, limit: limitParam, cursor } = req.query;
+    const limit = parseInt(limitParam as string) || 10;
 
     if (!userId) return res.status(400).json({ error: "Missing userId" });
 
-    const snapshot = await db
+    let query = db
       .collection("shopping-lists")
       .where("userId", "==", userId)
       .orderBy("createdAt", "desc")
-      .get();
+      .limit(limit + 1);
 
-    const lists = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    if (cursor) {
+      const docRef = await db.collection("shopping-lists").doc(cursor as string).get();
+      query = query.startAfter(docRef);
+    }
 
-    res.status(200).json(lists);
+    const snapshot = await query.get();
+    const hasMore = snapshot.docs.length > limit;
+    const docs = snapshot.docs.slice(0, limit);
+
+    res.status(200).json({
+      items: docs.map((doc) => ({ id: doc.id, ...doc.data() })),
+      next: hasMore ? docs.at(-1)?.id : undefined,
+      count: docs.length,
+      limit,
+    });
   } catch (error) {
+    console.error("Shopping lists error:", error);
     res.status(500).json({ error: "Error fetching shopping lists" });
   }
 });

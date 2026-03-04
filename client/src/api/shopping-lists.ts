@@ -16,15 +16,31 @@ export type ShoppingListFromServer = {
   createdAt: string;
 };
 
+export type ShoppingListsPage = {
+  items: ShoppingListFromServer[];
+  next: string | undefined;
+  count: number;
+  limit: number;
+};
+
 // Get all shopping lists
-export const getShoppingLists = async (userId: string): Promise<ShoppingListFromServer[]> => {
-  const res = await fetch(`${BASE_URL}/api/shopping-lists?userId=${userId}`);
+export const getShoppingLists = async (
+  userId: string,
+  cursor?: string,
+  limit = 10,
+): Promise<ShoppingListsPage> => {
+  const params = new URLSearchParams({ userId, limit: String(limit) });
+  if (cursor) params.append("cursor", cursor);
+
+  const res = await fetch(`${BASE_URL}/api/shopping-lists?${params}`);
   if (!res.ok) throw new Error("Errore nel caricamento delle liste");
   return res.json();
 };
 
 // Get single shopping list
-export const getShoppingList = async (id: string): Promise<ShoppingListFromServer> => {
+export const getShoppingList = async (
+  id: string,
+): Promise<ShoppingListFromServer> => {
   const res = await fetch(`${BASE_URL}/api/shopping-lists/${id}`);
   if (!res.ok) throw new Error("Errore nel caricamento della lista");
   return res.json();
@@ -50,13 +66,16 @@ export const createShoppingList = async (payload: {
 export const updateShoppingListItem = async (
   listId: string,
   itemIndex: number,
-  checked: boolean
+  checked: boolean,
 ): Promise<void> => {
-  const res = await fetch(`${BASE_URL}/api/shopping-lists/${listId}/items/${itemIndex}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ checked }),
-  });
+  const res = await fetch(
+    `${BASE_URL}/api/shopping-lists/${listId}/items/${itemIndex}`,
+    {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ checked }),
+    },
+  );
   if (!res.ok) throw new Error("Errore nell'aggiornamento");
 };
 

@@ -1,12 +1,13 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeftIcon,
   ShoppingCart,
   Trash2,
-  ExternalLink,
   CheckIcon,
+  ChevronDown,
+  AlertCircle,
 } from "lucide-react";
 import Link from "next/link";
 import { match } from "ts-pattern";
@@ -15,9 +16,9 @@ import { it } from "date-fns/locale";
 import { getShoppingLists, deleteShoppingList } from "@/api/shopping-lists";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function ShoppingLists() {
   const authState = useAuth();
@@ -25,17 +26,24 @@ export default function ShoppingLists() {
     authState.status === "authenticated" ? authState.user.uid : null;
   const queryClient = useQueryClient();
 
-  const listsQuery = useQuery({
-    queryKey: ["shopping-lists", userId],
-    queryFn: () => getShoppingLists(userId!),
-    enabled: !!userId,
-  });
+  const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["shopping-lists", userId],
+      queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
+        getShoppingLists(userId!, pageParam),
+      initialPageParam: undefined as string | undefined,
+      getNextPageParam: (lastPage) => lastPage.next,
+      enabled: !!userId,
+    });
 
   const { mutate: onDelete } = useMutation({
     mutationFn: (id: string) => deleteShoppingList(id),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: ["shopping-lists"] }),
   });
+
+  const allLists = data?.pages.flatMap((p) => p.items) ?? [];
+  const listsMatch = { status, data: allLists };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
@@ -55,7 +63,7 @@ export default function ShoppingLists() {
 
       {/* Liste */}
       <div className="flex flex-col gap-4">
-        {match(listsQuery)
+        {match(listsMatch)
           .with({ status: "error" }, () => (
             <Alert variant="destructive" className="max-w-xl">
               <AlertCircle className="w-4 h-4" />
@@ -66,7 +74,7 @@ export default function ShoppingLists() {
           ))
           .with({ status: "pending" }, () =>
             Array.from({ length: 3 }, (_, i) => (
-              <Card key={i} className="animate-pulse h-24" />
+              <Card key={i} className="animate-pulse h-16" />
             )),
           )
           .with({ status: "success" }, ({ data: lists }) =>
@@ -85,21 +93,17 @@ export default function ShoppingLists() {
                 const isComplete = checkedCount === total;
 
                 return (
-                  <Link href={`/shopping-lists/${list.id}`}>
-                    <Card
-                      key={list.id}
-                      className="shadow border-2 border-secondary hover:border-primary transition-all duration-200"
-                    >
+                  <Link key={list.id} href={`/shopping-lists/${list.id}`}>
+                    <Card className={cn(
+                      "shadow border-2 border-secondary hover:border-primary transition-all duration-200 cursor-pointer",
+                      isComplete && "opacity-60 grayscale-[30%]"
+                    )}>
                       <CardHeader className="py-3">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-base font-semibold">
-                            {format(new Date(list.dateFrom), "dd MMM", {
-                              locale: it,
-                            })}{" "}
+                            {format(new Date(list.dateFrom), "dd MMM", { locale: it })}{" "}
                             →{" "}
-                            {format(new Date(list.dateTo), "dd MMM yyyy", {
-                              locale: it,
-                            })}
+                            {format(new Date(list.dateTo), "dd MMM yyyy", { locale: it })}
                           </span>
                           <div className="flex items-center gap-2 shrink-0">
                             {isComplete ? (
@@ -120,7 +124,6 @@ export default function ShoppingLists() {
                                 e.stopPropagation();
                                 onDelete(list.id);
                               }}
-                              className="cusor-pointer"
                             >
                               <Trash2 className="w-4 h-4" />
                             </Button>
@@ -135,6 +138,20 @@ export default function ShoppingLists() {
           )
           .exhaustive()}
       </div>
+
+      {/* Paginazione */}
+      {hasNextPage && (
+        <div className="flex justify-center pb-8">
+          <button
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+            className="flex items-center gap-3 px-8 py-3 rounded-full border-2 border-brand/30 hover:border-brand bg-white hover:bg-brand/5 transition-all duration-300 text-brand font-semibold shadow-sm hover:shadow-md disabled:opacity-50"
+          >
+            <ChevronDown className={cn("w-4 h-4", isFetchingNextPage && "animate-bounce")} />
+            {isFetchingNextPage ? "Caricamento..." : "Carica altre liste"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
