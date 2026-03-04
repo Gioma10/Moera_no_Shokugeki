@@ -18,6 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Moera no Shokugeki",
   description: "Il ricettario di Moe e Nowy",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
