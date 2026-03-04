@@ -14,6 +14,7 @@ import {
   UtensilsCrossed,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { match } from "ts-pattern";
 import { getRecipe } from "@/api/recipes";
@@ -23,7 +24,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Recipe } from "@/types/recipes";
-import Link from "next/link";
 
 const CATEGORY_LABELS: Record<string, string> = {
   firstCourse: "Primo Piatto",

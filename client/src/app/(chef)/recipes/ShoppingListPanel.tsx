@@ -1,32 +1,30 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import { format } from "date-fns";
+import { it } from "date-fns/locale";
+import { CalendarIcon, Save, ShoppingCart, Trash2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { X, ShoppingCart, Trash2, Save } from "lucide-react";
-import { useShoppingListBuilder } from "@/context/ShoppingListBuilderContext";
+import { createShoppingList } from "@/api/shopping-lists";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from "@/components/ui/dialog";
-import { Calendar } from "@/components/ui/calendar";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Input } from "@/components/ui/input";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
-import { it } from "date-fns/locale";
-import { useMutation } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { createShoppingList } from "@/api/shopping-lists";
-
+import { useShoppingListBuilder } from "@/context/ShoppingListBuilderContext";
+import { cn } from "@/lib/utils";
 
 export function ShoppingListPanel() {
   const [activeTab, setActiveTab] = useState<"ingredients" | "recipes">(
@@ -42,7 +40,7 @@ export function ShoppingListPanel() {
     authState.status === "authenticated" ? authState.user.uid : null;
 
   const router = useRouter();
-  
+
   const {
     selectedRecipes,
     mergedIngredients,
@@ -217,7 +215,6 @@ export function ShoppingListPanel() {
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-2">
-
             {/* Date From */}
             <Popover>
               <PopoverTrigger asChild>

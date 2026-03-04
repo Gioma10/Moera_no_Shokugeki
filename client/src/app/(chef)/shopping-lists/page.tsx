@@ -1,23 +1,27 @@
 "use client";
 
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { format } from "date-fns";
+import { it } from "date-fns/locale";
+import {
+  AlertCircle,
   ArrowLeftIcon,
-  ShoppingCart,
-  Trash2,
   CheckIcon,
   ChevronDown,
-  AlertCircle,
+  ShoppingCart,
+  Trash2,
 } from "lucide-react";
 import Link from "next/link";
 import { match } from "ts-pattern";
-import { format } from "date-fns";
-import { it } from "date-fns/locale";
-import { getShoppingLists, deleteShoppingList } from "@/api/shopping-lists";
-import { useAuth } from "@/context/AuthContext";
+import { deleteShoppingList, getShoppingLists } from "@/api/shopping-lists";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
 export default function ShoppingLists() {
@@ -94,16 +98,22 @@ export default function ShoppingLists() {
 
                 return (
                   <Link key={list.id} href={`/shopping-lists/${list.id}`}>
-                    <Card className={cn(
-                      "shadow border-2 border-secondary hover:border-primary transition-all duration-200 cursor-pointer",
-                      isComplete && "opacity-60 grayscale-30"
-                    )}>
+                    <Card
+                      className={cn(
+                        "shadow border-2 border-secondary hover:border-primary transition-all duration-200 cursor-pointer",
+                        isComplete && "opacity-60 grayscale-30",
+                      )}
+                    >
                       <CardHeader className="py-3">
                         <div className="flex items-center justify-between gap-2">
                           <span className="text-base font-semibold">
-                            {format(new Date(list.dateFrom), "dd MMM", { locale: it })}{" "}
+                            {format(new Date(list.dateFrom), "dd MMM", {
+                              locale: it,
+                            })}{" "}
                             →{" "}
-                            {format(new Date(list.dateTo), "dd MMM yyyy", { locale: it })}
+                            {format(new Date(list.dateTo), "dd MMM yyyy", {
+                              locale: it,
+                            })}
                           </span>
                           <div className="flex items-center gap-2 shrink-0">
                             {isComplete ? (
@@ -147,7 +157,9 @@ export default function ShoppingLists() {
             disabled={isFetchingNextPage}
             className="flex items-center gap-3 px-8 py-3 rounded-full border-2 border-brand/30 hover:border-brand bg-white hover:bg-brand/5 transition-all duration-300 text-brand font-semibold shadow-sm hover:shadow-md disabled:opacity-50"
           >
-            <ChevronDown className={cn("w-4 h-4", isFetchingNextPage && "animate-bounce")} />
+            <ChevronDown
+              className={cn("w-4 h-4", isFetchingNextPage && "animate-bounce")}
+            />
             {isFetchingNextPage ? "Caricamento..." : "Carica altre liste"}
           </button>
         </div>

@@ -1,14 +1,13 @@
 "use client";
 
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { ArrowLeftIcon, ShoppingCart, Save } from "lucide-react";
-import Link from "next/link";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
+import { AlertCircle, ArrowLeftIcon, Save, ShoppingCart } from "lucide-react";
+import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { getShoppingList, saveShoppingListItems } from "@/api/shopping-lists";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export default function ShoppingListDetail({
@@ -93,7 +92,9 @@ export default function ShoppingListDetail({
       {/* Progresso */}
       <div className="space-y-1.5">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>{checked.length} di {localItems.length} ingredienti</span>
+          <span>
+            {checked.length} di {localItems.length} ingredienti
+          </span>
           <span>{Math.round((checked.length / localItems.length) * 100)}%</span>
         </div>
         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
@@ -165,16 +166,22 @@ export default function ShoppingListDetail({
       {unchecked.length === 0 && localItems.length > 0 && (
         <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
           <ShoppingCart className="w-12 h-12 text-brand opacity-80" />
-          <p className="text-lg font-semibold text-foreground">Spesa completata! 🎉</p>
+          <p className="text-lg font-semibold text-foreground">
+            Spesa completata! 🎉
+          </p>
           <p className="text-sm">Hai preso tutti gli ingredienti</p>
         </div>
       )}
 
       {/* Bottone salva — fisso in basso, visibile solo se ci sono modifiche */}
-      <div className={cn(
-        "fixed bottom-6 left-0 right-0 flex justify-center z-50 px-4 transition-all duration-300",
-        isDirty ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
-      )}>
+      <div
+        className={cn(
+          "fixed bottom-6 left-0 right-0 flex justify-center z-50 px-4 transition-all duration-300",
+          isDirty
+            ? "opacity-100 translate-y-0"
+            : "opacity-0 translate-y-4 pointer-events-none",
+        )}
+      >
         <button
           onClick={() => saveItems()}
           disabled={isPending}

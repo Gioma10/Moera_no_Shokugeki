@@ -19,11 +19,11 @@ import { StepsBar } from "@/components/CreateRecipe/StepsBar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
+import { useAuth } from "@/context/AuthContext";
 import { RecipeSchema } from "@/types/recipes";
 import { FirstStep } from "./FirstStep";
 import { SecondStep } from "./SecondStep";
 import { ThirdStep } from "./ThirdStep";
-import { useAuth } from "@/context/AuthContext";
 
 const steps = ["first", "second", "third"] as const;
 export type Step = (typeof steps)[number];
@@ -42,7 +42,7 @@ const CreateRecipe = () => {
   const userId =
     authState.status === "authenticated" ? authState.user.uid : null;
 
-  const isAdmin = authState.user?.role === "admin"
+  const isAdmin = authState.user?.role === "admin";
 
   const form = useForm({
     resolver: zodResolver(RecipeSchema),
