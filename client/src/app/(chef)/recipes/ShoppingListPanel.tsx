@@ -5,11 +5,45 @@ import { X, ShoppingCart, Trash2, Save } from "lucide-react";
 import { useShoppingListBuilder } from "@/context/ShoppingListBuilderContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Input } from "@/components/ui/input";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
+import { it } from "date-fns/locale";
+import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { createShoppingList } from "@/api/shopping-lists";
+
 
 export function ShoppingListPanel() {
   const [activeTab, setActiveTab] = useState<"ingredients" | "recipes">(
     "ingredients",
   );
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [listName, setListName] = useState("");
+  const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
+  const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
+
+  const authState = useAuth();
+  const userId =
+    authState.status === "authenticated" ? authState.user.uid : null;
+
+  const router = useRouter();
+  
   const {
     selectedRecipes,
     mergedIngredients,
@@ -17,6 +51,22 @@ export function ShoppingListPanel() {
     clearAll,
     stopBuilding,
   } = useShoppingListBuilder();
+
+  const { mutate: saveList, isPending } = useMutation({
+    mutationFn: () =>
+      createShoppingList({
+        userId: userId!,
+        name: listName,
+        dateFrom: format(dateFrom!, "yyyy-MM-dd"),
+        dateTo: format(dateTo!, "yyyy-MM-dd"),
+        items: mergedIngredients.map((i) => ({ ...i, checked: false })),
+      }),
+    onSuccess: () => {
+      setDialogOpen(false);
+      stopBuilding();
+      router.push("/shopping-lists");
+    },
+  });
 
   const isEmpty = selectedRecipes.length === 0;
 
@@ -50,7 +100,7 @@ export function ShoppingListPanel() {
           <X className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
-      
+
       {/* Tabs */}
       <div className="flex border-b shrink-0">
         <button
@@ -154,15 +204,82 @@ export function ShoppingListPanel() {
         <Button
           size="sm"
           className="flex-1 gap-1"
-          onClick={() => {
-            /* lo gestiamo dopo */
-          }}
+          onClick={() => setDialogOpen(true)}
           disabled={isEmpty}
         >
           <Save className="w-3.5 h-3.5" />
           Salva lista
         </Button>
       </div>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Salva lista della spesa</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 py-2">
+            <Input
+              placeholder="Nome lista (es. Spesa settimanale)"
+              value={listName}
+              onChange={(e) => setListName(e.target.value)}
+            />
+
+            {/* Date From */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="justify-start gap-2">
+                  <CalendarIcon className="w-4 h-4" />
+                  {dateFrom
+                    ? format(dateFrom, "dd MMM yyyy", { locale: it })
+                    : "Data inizio"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={dateFrom}
+                  onSelect={setDateFrom}
+                  locale={it}
+                />
+              </PopoverContent>
+            </Popover>
+
+            {/* Date To */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="justify-start gap-2">
+                  <CalendarIcon className="w-4 h-4" />
+                  {dateTo
+                    ? format(dateTo, "dd MMM yyyy", { locale: it })
+                    : "Data fine"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={dateTo}
+                  onSelect={setDateTo}
+                  disabled={(date) => (dateFrom ? date < dateFrom : false)}
+                  locale={it}
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>
+              Annulla
+            </Button>
+            <Button
+              onClick={() => saveList()}
+              disabled={!listName || !dateFrom || !dateTo || isPending}
+            >
+              {isPending ? "Salvataggio..." : "Salva"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
