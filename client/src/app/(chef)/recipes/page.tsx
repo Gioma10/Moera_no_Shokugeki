@@ -15,9 +15,18 @@ import { RecipeCard, RecipeCardSkeleton } from "@/components/RecipeCard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
+import { ShoppingCart } from "lucide-react";
+import { useShoppingListBuilder } from "@/context/ShoppingListBuilderContext";
+
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { ShoppingListPanel } from "./ShoppingListPanel";
 
 export default function Recipes() {
   const [search, setSearch] = useState("");
+
+  const { isBuilding, startBuilding, selectedRecipes } =
+    useShoppingListBuilder();
 
   const authState = useAuth();
   const userId =
@@ -34,7 +43,7 @@ export default function Recipes() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
+    <div className={cn("max-w-7xl mx-auto px-4 py-8 space-y-8 transition-all duration-300", isBuilding && "md:mr-80")}>
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link
@@ -44,6 +53,7 @@ export default function Recipes() {
           <ArrowLeftIcon className="w-5 h-5" />
         </Link>
 
+        {/* Search input  */}
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -53,6 +63,17 @@ export default function Recipes() {
             className="pl-9 rounded-full bg-muted/40 border-0 focus-visible:ring-1"
           />
         </div>
+
+        {/* Shop list button  */}
+        <Button
+          onClick={startBuilding}
+          size="sm"
+          className="flex-none gap-2 rounded-full"
+          disabled={isBuilding}
+        >
+          <ShoppingCart className="w-4 h-4" />
+          <span className="hidden sm:inline">Crea lista</span>
+        </Button>
       </div>
 
       {/* Title */}
@@ -104,6 +125,8 @@ export default function Recipes() {
           )
           .exhaustive()}
       </div>
+
+      {isBuilding && <ShoppingListPanel />}
     </div>
   );
 }
