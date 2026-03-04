@@ -30,7 +30,7 @@ export default function Recipes() {
   const userId =
     authState.status === "authenticated" ? authState.user.uid : null;
 
-    const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["recipes", userId],
       queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
@@ -90,8 +90,8 @@ export default function Recipes() {
         </h1>
         {status === "success" && (
           <p className="page-description">
-            {filtered.length} ricett{filtered.length === 1 ? "a" : "e"}{" "}
-            trovat{filtered.length === 1 ? "a" : "e"}
+            {filtered.length} ricett{filtered.length === 1 ? "a" : "e"} trovat
+            {filtered.length === 1 ? "a" : "e"}
           </p>
         )}
       </div>
@@ -110,9 +110,7 @@ export default function Recipes() {
             </div>
           ))
           .with({ status: "pending" }, () =>
-            Array.from({ length: 8 }, (_, i) => (
-              <RecipeCardSkeleton key={i} />
-            )),
+            Array.from({ length: 8 }, (_, i) => <RecipeCardSkeleton key={i} />),
           )
           .with({ status: "success" }, ({ data }) =>
             data.length > 0 ? (
@@ -132,44 +130,16 @@ export default function Recipes() {
           .exhaustive()}
       </div>
 
-      {/* Paginazione desktop */}
+      {/* Paginazione */}
       {hasNextPage && (
-        <div className="hidden md:flex justify-center pb-8">
+        <div className="flex justify-center pb-8">
           <button
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
-            className="flex items-center gap-3 px-8 py-3 rounded-full border-2 border-brand/30 hover:border-brand bg-white hover:bg-brand/5 transition-all duration-300 text-brand font-semibold shadow-sm hover:shadow-md disabled:opacity-50"
+            className="cursor-pointer flex items-center gap-3 px-8 py-3 rounded-full border-2 border-brand/30 hover:border-brand bg-white hover:bg-brand/5 transition-all duration-300 text-brand font-semibold shadow-sm hover:shadow-md disabled:opacity-50"
           >
             <ChevronDown
-              className={cn(
-                "w-4 h-4 transition-transform duration-300",
-                isFetchingNextPage && "animate-bounce",
-              )}
-            />
-            {isFetchingNextPage ? "Caricamento..." : "Carica altre ricette"}
-            <ChevronDown
-              className={cn(
-                "w-4 h-4 transition-transform duration-300",
-                isFetchingNextPage && "animate-bounce",
-              )}
-            />
-          </button>
-        </div>
-      )}
-
-      {/* Paginazione mobile — fixed in basso */}
-      {hasNextPage && (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-30 p-4 bg-linear-to-t from-background via-background/95 to-transparent">
-          <button
-            onClick={() => fetchNextPage()}
-            disabled={isFetchingNextPage}
-            className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-brand text-white font-semibold shadow-lg hover:bg-brand/90 active:scale-95 transition-all disabled:opacity-50"
-          >
-            <ChevronDown
-              className={cn(
-                "w-4 h-4",
-                isFetchingNextPage && "animate-bounce",
-              )}
+              className={cn("w-4 h-4", isFetchingNextPage && "animate-bounce")}
             />
             {isFetchingNextPage ? "Caricamento..." : "Carica altre ricette"}
           </button>

@@ -26,7 +26,7 @@ export type RecipesPage = {
 export const getRecipes = async (
   userId: string,
   cursor?: string,
-  limit = 12,
+  limit = 10,
 ): Promise<RecipesPage> => {
   const params = new URLSearchParams({ userId, limit: String(limit) });
   if (cursor) params.append("cursor", cursor);
