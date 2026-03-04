@@ -16,7 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverContent,
@@ -50,13 +49,17 @@ export function ShoppingListPanel() {
   } = useShoppingListBuilder();
 
   const { mutate: saveList, isPending } = useMutation({
-    mutationFn: () =>
-      createShoppingList({
-        userId: userId!,
-        dateFrom: format(dateFrom!, "yyyy-MM-dd"),
-        dateTo: format(dateTo!, "yyyy-MM-dd"),
+    mutationFn: () => {
+      if (!userId || dateFrom == null || dateTo == null) {
+        return Promise.reject(new Error("Missing required data"));
+      }
+      return createShoppingList({
+        userId,
+        dateFrom: format(dateFrom, "yyyy-MM-dd"),
+        dateTo: format(dateTo, "yyyy-MM-dd"),
         items: mergedIngredients.map((i) => ({ ...i, checked: false })),
-      }),
+      });
+    },
     onSuccess: () => {
       setDialogOpen(false);
       stopBuilding();
@@ -90,6 +93,7 @@ export function ShoppingListPanel() {
           )}
         </div>
         <button
+          type="button"
           onClick={stopBuilding}
           className="p-1 rounded-full hover:bg-muted transition-colors"
         >
@@ -100,6 +104,7 @@ export function ShoppingListPanel() {
       {/* Tabs */}
       <div className="flex border-b shrink-0">
         <button
+          type="button"
           onClick={() => setActiveTab("ingredients")}
           className={cn(
             "flex-1 text-sm py-2 font-medium transition-colors",
@@ -116,6 +121,7 @@ export function ShoppingListPanel() {
           )}
         </button>
         <button
+          type="button"
           onClick={() => setActiveTab("recipes")}
           className={cn(
             "flex-1 text-sm py-2 font-medium transition-colors",
@@ -174,6 +180,7 @@ export function ShoppingListPanel() {
               >
                 <span className="text-sm font-medium">{recipe.title}</span>
                 <button
+                  type="button"
                   onClick={() => removeRecipe(recipe.title)}
                   className="p-1 rounded-full hover:bg-destructive/10 hover:text-destructive transition-colors"
                 >

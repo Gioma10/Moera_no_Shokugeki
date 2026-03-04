@@ -10,6 +10,15 @@ import { getShoppingList, saveShoppingListItems } from "@/api/shopping-lists";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 
+const DETAIL_SKELETON_KEYS = [
+  "detail-skeleton-0",
+  "detail-skeleton-1",
+  "detail-skeleton-2",
+  "detail-skeleton-3",
+  "detail-skeleton-4",
+  "detail-skeleton-5",
+] as const;
+
 export default function ShoppingListDetail({
   params,
 }: {
@@ -49,8 +58,8 @@ export default function ShoppingListDetail({
   if (listQuery.status === "pending") {
     return (
       <div className="max-w-lg mx-auto px-4 py-8 space-y-4">
-        {Array.from({ length: 6 }, (_, i) => (
-          <div key={i} className="h-14 rounded-xl bg-muted animate-pulse" />
+        {DETAIL_SKELETON_KEYS.map((key) => (
+          <div key={key} className="h-14 rounded-xl bg-muted animate-pulse" />
         ))}
       </div>
     );
@@ -112,18 +121,24 @@ export default function ShoppingListDetail({
             const index = localItems.indexOf(item);
             return (
               <li
-                key={index}
-                onClick={() => toggleItem(index)}
-                className="flex items-center justify-between p-4 rounded-xl border-2 border-border bg-background cursor-pointer hover:border-brand hover:shadow-sm transition-all active:scale-[0.98]"
+                key={`${item.ingredient}-${String(item.quantity)}-${item.unit}`}
               >
-                <span className="text-base font-medium">{item.ingredient}</span>
-                <span className="text-sm text-muted-foreground shrink-0 ml-2">
-                  {item.quantity !== null ? (
-                    `${item.quantity} ${item.unit}`
-                  ) : (
-                    <span className="italic">q.b.</span>
-                  )}
-                </span>
+                <button
+                  type="button"
+                  onClick={() => toggleItem(index)}
+                  className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-border bg-background cursor-pointer hover:border-brand hover:shadow-sm transition-all active:scale-[0.98] text-left"
+                >
+                  <span className="text-base font-medium">
+                    {item.ingredient}
+                  </span>
+                  <span className="text-sm text-muted-foreground shrink-0 ml-2">
+                    {item.quantity !== null ? (
+                      `${item.quantity} ${item.unit}`
+                    ) : (
+                      <span className="italic">q.b.</span>
+                    )}
+                  </span>
+                </button>
               </li>
             );
           })}
@@ -141,20 +156,24 @@ export default function ShoppingListDetail({
               const index = localItems.indexOf(item);
               return (
                 <li
-                  key={index}
-                  onClick={() => toggleItem(index)}
-                  className="flex items-center justify-between p-4 rounded-xl border-2 border-border/50 bg-muted/30 cursor-pointer opacity-50 hover:opacity-70 transition-all active:scale-[0.98]"
+                  key={`${item.ingredient}-${String(item.quantity)}-${item.unit}-checked`}
                 >
-                  <span className="text-base font-medium line-through">
-                    {item.ingredient}
-                  </span>
-                  <span className="text-sm text-muted-foreground shrink-0 ml-2 line-through">
-                    {item.quantity !== null ? (
-                      `${item.quantity} ${item.unit}`
-                    ) : (
-                      <span className="italic">q.b.</span>
-                    )}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => toggleItem(index)}
+                    className="w-full flex items-center justify-between p-4 rounded-xl border-2 border-border/50 bg-muted/30 cursor-pointer opacity-50 hover:opacity-70 transition-all active:scale-[0.98] text-left"
+                  >
+                    <span className="text-base font-medium line-through">
+                      {item.ingredient}
+                    </span>
+                    <span className="text-sm text-muted-foreground shrink-0 ml-2 line-through">
+                      {item.quantity !== null ? (
+                        `${item.quantity} ${item.unit}`
+                      ) : (
+                        <span className="italic">q.b.</span>
+                      )}
+                    </span>
+                  </button>
                 </li>
               );
             })}
@@ -183,6 +202,7 @@ export default function ShoppingListDetail({
         )}
       >
         <button
+          type="button"
           onClick={() => saveItems()}
           disabled={isPending}
           className="flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-brand text-white font-semibold shadow-xl hover:bg-brand/90 active:scale-95 transition-all disabled:opacity-50"

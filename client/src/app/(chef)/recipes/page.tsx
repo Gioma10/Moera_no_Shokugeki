@@ -22,6 +22,17 @@ import { useShoppingListBuilder } from "@/context/ShoppingListBuilderContext";
 import { cn } from "@/lib/utils";
 import { ShoppingListPanel } from "./ShoppingListPanel";
 
+const RECIPE_SKELETON_KEYS = [
+  "recipe-skeleton-0",
+  "recipe-skeleton-1",
+  "recipe-skeleton-2",
+  "recipe-skeleton-3",
+  "recipe-skeleton-4",
+  "recipe-skeleton-5",
+  "recipe-skeleton-6",
+  "recipe-skeleton-7",
+] as const;
+
 export default function Recipes() {
   const [search, setSearch] = useState("");
   const { isBuilding, startBuilding } = useShoppingListBuilder();
@@ -33,8 +44,10 @@ export default function Recipes() {
   const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["recipes", userId],
-      queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
-        getRecipes(userId!, pageParam),
+      queryFn: ({ pageParam }: { pageParam: string | undefined }) => {
+        if (!userId) throw new Error("User not authenticated");
+        return getRecipes(userId, pageParam);
+      },
       initialPageParam: undefined as string | undefined,
       getNextPageParam: (lastPage) => lastPage.next,
       enabled: !!userId,
@@ -115,7 +128,7 @@ export default function Recipes() {
             </div>
           ))
           .with({ status: "pending" }, () =>
-            Array.from({ length: 8 }, (_, i) => <RecipeCardSkeleton key={i} />),
+            RECIPE_SKELETON_KEYS.map((key) => <RecipeCardSkeleton key={key} />),
           )
           .with({ status: "success" }, ({ data }) =>
             data.length > 0 ? (
@@ -139,6 +152,7 @@ export default function Recipes() {
       {hasNextPage && (
         <div className="flex justify-center pb-8">
           <button
+            type="button"
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
             className="cursor-pointer flex items-center gap-3 px-8 py-3 rounded-full border-2 border-brand/30 hover:border-brand bg-white hover:bg-brand/5 transition-all duration-300 text-brand font-semibold shadow-sm hover:shadow-md disabled:opacity-50"

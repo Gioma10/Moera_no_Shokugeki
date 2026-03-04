@@ -24,6 +24,12 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 
+const LIST_SKELETON_KEYS = [
+  "list-skeleton-0",
+  "list-skeleton-1",
+  "list-skeleton-2",
+] as const;
+
 export default function ShoppingLists() {
   const authState = useAuth();
   const userId =
@@ -33,8 +39,10 @@ export default function ShoppingLists() {
   const { data, status, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["shopping-lists", userId],
-      queryFn: ({ pageParam }: { pageParam: string | undefined }) =>
-        getShoppingLists(userId!, pageParam),
+      queryFn: ({ pageParam }: { pageParam: string | undefined }) => {
+        if (!userId) throw new Error("User not authenticated");
+        return getShoppingLists(userId, pageParam);
+      },
       initialPageParam: undefined as string | undefined,
       getNextPageParam: (lastPage) => lastPage.next,
       enabled: !!userId,
@@ -77,8 +85,8 @@ export default function ShoppingLists() {
             </Alert>
           ))
           .with({ status: "pending" }, () =>
-            Array.from({ length: 3 }, (_, i) => (
-              <Card key={i} className="animate-pulse h-16" />
+            LIST_SKELETON_KEYS.map((key) => (
+              <Card key={key} className="animate-pulse h-16" />
             )),
           )
           .with({ status: "success" }, ({ data: lists }) =>
@@ -153,6 +161,7 @@ export default function ShoppingLists() {
       {hasNextPage && (
         <div className="flex justify-center pb-8">
           <button
+            type="button"
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
             className="flex items-center gap-3 px-8 py-3 rounded-full border-2 border-brand/30 hover:border-brand bg-white hover:bg-brand/5 transition-all duration-300 text-brand font-semibold shadow-sm hover:shadow-md disabled:opacity-50"

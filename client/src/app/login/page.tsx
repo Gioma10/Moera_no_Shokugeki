@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import type { ControllerRenderProps, FieldValues } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
@@ -67,7 +68,7 @@ function PasswordInput({
   show: boolean;
   onToggle: () => void;
   autoFocus?: boolean;
-  field: any;
+  field: ControllerRenderProps<FieldValues, string>;
 }) {
   return (
     <div className="relative">

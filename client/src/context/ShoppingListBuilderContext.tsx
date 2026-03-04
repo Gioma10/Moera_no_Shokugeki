@@ -71,7 +71,7 @@ function mergeIngredients(recipes: RecipeForList[]): MergedIngredient[] {
         } else {
           result.push({
             ingredient: ing.ingredient,
-            quantity: isNaN(parsed) ? null : parsed,
+            quantity: Number.isNaN(parsed) ? null : parsed,
             unit: ing.unit,
           });
         }

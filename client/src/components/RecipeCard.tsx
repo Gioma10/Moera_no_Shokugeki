@@ -20,6 +20,8 @@ const masterColor: Record<string, string> = {
   nowy: "bg-orange-400",
 };
 
+const STAR_KEYS = ["star-0", "star-1", "star-2", "star-3", "star-4"] as const;
+
 export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
   const queryClient = useQueryClient();
   const { isBuilding, addRecipe, removeRecipe, selectedRecipes } =
@@ -70,9 +72,9 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
             {recipe.title}
           </h3>
           <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }, (_, i) => (
+            {STAR_KEYS.map((key, i) => (
               <Star
-                key={i}
+                key={key}
                 className={cn(
                   "w-3.5 h-3.5",
                   i < recipe.rating
@@ -82,45 +84,47 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
               />
             ))}
           </div>
-        </div>
 
-        {isBuilding ? (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              isAdded
-                ? removeRecipe(recipe.title)
-                : addRecipe({
-                    title: recipe.title,
-                    ingredients: recipe.ingredients,
-                  });
-            }}
-            className={cn(
-              "absolute bottom-3 right-3 p-2 rounded-full transition-all duration-200 active:scale-95",
-              isAdded
-                ? "bg-brand text-white shadow-lg"
-                : "bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-brand",
-            )}
-          >
-            {isAdded ? (
-              <Check className="w-4 h-4" />
-            ) : (
-              <Plus className="w-4 h-4" />
-            )}
-          </button>
-        ) : (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              onDelete(recipe.id);
-            }}
-            className="absolute bottom-3 right-3 p-1.5 rounded-full bg-black/40 backdrop-blur-sm text-white/70 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        )}
+          {isBuilding ? (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                isAdded
+                  ? removeRecipe(recipe.title)
+                  : addRecipe({
+                      title: recipe.title,
+                      ingredients: recipe.ingredients,
+                    });
+              }}
+              className={cn(
+                "absolute bottom-3 right-3 p-2 rounded-full transition-all duration-200 active:scale-95",
+                isAdded
+                  ? "bg-brand text-white shadow-lg"
+                  : "bg-white/20 backdrop-blur-sm text-white border border-white/30 hover:bg-brand",
+              )}
+            >
+              {isAdded ? (
+                <Check className="w-4 h-4" />
+              ) : (
+                <Plus className="w-4 h-4" />
+              )}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onDelete(recipe.id);
+              }}
+              className="absolute bottom-3 right-3 p-1.5 rounded-full bg-black/40 backdrop-blur-sm text-white/70 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          )}
+        </div>
       </div>
     </Link>
   );
