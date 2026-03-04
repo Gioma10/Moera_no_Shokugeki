@@ -4,6 +4,7 @@ import cors from "cors";
 import recipesRouter from "./routes/recipes.ts";
 import authRouter from "./routes/auth.ts";
 import adminUsersRouter from "./routes/admin/users.ts";
+import shoppingListsRouter from "./routes/shopping-lists.ts";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 // Routes
 app.use("/api/recipes", recipesRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/shopping-lists", shoppingListsRouter);
 
 // Admin Routes
 app.use("/api/admin/users", adminUsersRouter);
