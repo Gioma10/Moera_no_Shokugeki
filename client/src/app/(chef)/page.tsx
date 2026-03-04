@@ -5,7 +5,8 @@ import {
   ChefHat,
   LogOut,
   PlusCircle,
-  ShieldCheck,
+  ShieldCheckIcon,
+  ShoppingCartIcon,
   User,
   UtensilsCrossed,
 } from "lucide-react";
@@ -100,7 +101,7 @@ export default function Home() {
                     className="cursor-pointer flex items-center justify-between"
                   >
                     <span className="flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4" />
+                      <ShieldCheckIcon className="w-4 h-4" />
                       Revisiona utenti
                     </span>
                     {hasPending && (
@@ -113,6 +114,19 @@ export default function Home() {
                 <DropdownMenuSeparator />
               </>
             )}
+
+            <DropdownMenuItem asChild>
+              <Link
+                href="/shopping-lists"
+                className="cursor-pointer flex items-center justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <ShoppingCartIcon className="w-4 h-4" />
+                  Liste della spesa
+                </span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
 
             <DropdownMenuItem
               onClick={handleLogout}
