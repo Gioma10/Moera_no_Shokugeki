@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
+  ArrowLeftIcon,
   BookOpen,
   ChefHat,
   Clock,
@@ -22,6 +23,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { Recipe } from "@/types/recipes";
+import Link from "next/link";
 
 const CATEGORY_LABELS: Record<string, string> = {
   firstCourse: "Primo Piatto",
@@ -52,12 +54,21 @@ function StarRating({ rating }: { rating: number }) {
 
 function RecipeDetail({ recipe }: { recipe: Recipe }) {
   const imageUrl =
-    recipe.image instanceof File || recipe.image instanceof Blob
-      ? URL.createObjectURL(recipe.image)
-      : undefined;
+    typeof recipe.image === "string"
+      ? recipe.image
+      : recipe.image instanceof File || recipe.image instanceof Blob
+        ? URL.createObjectURL(recipe.image)
+        : undefined;
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
+      <Link
+        href="/recipes"
+        className="page-card inline-flex p-2 rounded-full hover:shadow-md transition-shadow"
+      >
+        <ArrowLeftIcon className="w-5 h-5" />
+      </Link>
+
       {/* Hero */}
       <div className="relative rounded-3xl overflow-hidden h-80 bg-muted shadow-lg">
         {imageUrl ? (
@@ -113,12 +124,14 @@ function RecipeDetail({ recipe }: { recipe: Recipe }) {
           value={recipe.temperature === "hot" ? "Caldo" : "Freddo"}
           bg={recipe.temperature === "hot" ? "bg-rose-50" : "bg-sky-50"}
         />
-        <InfoCard
-          icon={<ChefHat className="w-5 h-5 text-amber-500" />}
-          label="Chef"
-          value={MASTER_LABELS[recipe.master] ?? recipe.master}
-          bg="bg-amber-50"
-        />
+        {recipe.master && (
+          <InfoCard
+            icon={<ChefHat className="w-5 h-5 text-amber-500" />}
+            label="Chef"
+            value={MASTER_LABELS[recipe.master] ?? recipe.master}
+            bg="bg-amber-50"
+          />
+        )}
       </div>
 
       <div className="grid md:grid-cols-5 gap-6">

@@ -97,7 +97,12 @@ export default function Recipes() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 w-full gap-4">
+      <div
+        className={cn(
+          "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 w-full gap-4",
+          isBuilding && "pb-[55vh] md:pb-0",
+        )}
+      >
         {match(recipesMatch)
           .with({ status: "error" }, () => (
             <div className="col-span-full">
