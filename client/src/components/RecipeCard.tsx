@@ -5,9 +5,15 @@ import { deleteRecipe, type RecipeFromServer } from "@/api/recipes";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
+import { Plus, Check } from "lucide-react";
+import { useShoppingListBuilder } from "@/context/ShoppingListBuilderContext";
 
 export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
   const queryClient = useQueryClient();
+
+  const { isBuilding, addRecipe, removeRecipe, selectedRecipes } =
+    useShoppingListBuilder();
+  const isAdded = selectedRecipes.some((r) => r.title === recipe.title);
 
   const { mutate: onDelete } = useMutation({
     mutationFn: (id: string) => deleteRecipe(id),
@@ -18,7 +24,7 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
     <Link href={`/recipes/${recipe.id}`}>
       <Card
         key={recipe.id}
-        className="shadow border-2 border-secondary hover:shadow-2xl hover:border-primary transition-all duration-300 hover:-translate-y-5 cursor-pointer"
+        className="relative shadow border-2 border-secondary hover:shadow-2xl hover:border-primary transition-all duration-300 hover:-translate-y-5 cursor-pointer"
       >
         <CardHeader>
           <div className="w-full h-40 relative">
@@ -46,6 +52,34 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
               >
                 Delete
               </Button>
+              {isBuilding && (
+                <Button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    isAdded
+                      ? removeRecipe(recipe.title)
+                      : addRecipe({
+                          title: recipe.title,
+                          ingredients: recipe.ingredients,
+                        });
+                  }}
+                  variant="outline"
+                  size="sm"
+                  className={`absolute top-3 right-3 gap-1.5 rounded-full transition-all ${
+                    isAdded
+                      ? "bg-brand text-white border-brand"
+                      : "bg-white/90 backdrop-blur"
+                  }`}
+                >
+                  {isAdded ? (
+                    <Check className="w-3 h-3" />
+                  ) : (
+                    <Plus className="w-3 h-3" />
+                  )}
+                  {isAdded ? "Aggiunta" : "Lista"}
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>

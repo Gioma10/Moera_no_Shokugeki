@@ -1,14 +1,9 @@
 "use client";
 
+import { IngredientData } from "@/types/recipes";
 import { createContext, useContext, useMemo, useState } from "react";
 
 // ─── Tipi ─────────────────────────────────────────────────────────────────────
-
-export type IngredientData = {
-  ingredient: string;
-  quantity: string;
-  unit: "g" | "l" | "ml" | "pcs" | "q.b.";
-};
 
 export type RecipeForList = {
   title: string;

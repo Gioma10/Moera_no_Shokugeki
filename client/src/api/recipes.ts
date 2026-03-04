@@ -1,3 +1,5 @@
+import { IngredientData } from "@/types/recipes";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
 
 export type RecipeFromServer = {
@@ -5,6 +7,7 @@ export type RecipeFromServer = {
   title: string;
   description: string;
   image: string; // URL di Cloudinary
+  ingredients: IngredientData[];
 };
 
 // Get recipes
