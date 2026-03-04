@@ -25,8 +25,7 @@ import { ShoppingListPanel } from "./ShoppingListPanel";
 export default function Recipes() {
   const [search, setSearch] = useState("");
 
-  const { isBuilding, startBuilding, selectedRecipes } =
-    useShoppingListBuilder();
+  const { isBuilding, startBuilding } = useShoppingListBuilder();
 
   const authState = useAuth();
   const userId =
@@ -43,7 +42,12 @@ export default function Recipes() {
   );
 
   return (
-    <div className={cn("max-w-7xl mx-auto px-4 py-8 space-y-8 transition-all duration-300", isBuilding && "md:mr-80")}>
+    <div
+      className={cn(
+        "max-w-7xl mx-auto px-4 py-8 space-y-8 transition-all duration-300",
+        isBuilding && "md:mr-80",
+      )}
+    >
       {/* Header */}
       <div className="flex items-center gap-4">
         <Link

@@ -34,7 +34,6 @@ export function ShoppingListPanel() {
   );
 
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [listName, setListName] = useState("");
   const [dateFrom, setDateFrom] = useState<Date | undefined>(undefined);
   const [dateTo, setDateTo] = useState<Date | undefined>(undefined);
 
@@ -56,7 +55,6 @@ export function ShoppingListPanel() {
     mutationFn: () =>
       createShoppingList({
         userId: userId!,
-        name: listName,
         dateFrom: format(dateFrom!, "yyyy-MM-dd"),
         dateTo: format(dateTo!, "yyyy-MM-dd"),
         items: mergedIngredients.map((i) => ({ ...i, checked: false })),
@@ -219,11 +217,6 @@ export function ShoppingListPanel() {
           </DialogHeader>
 
           <div className="flex flex-col gap-4 py-2">
-            <Input
-              placeholder="Nome lista (es. Spesa settimanale)"
-              value={listName}
-              onChange={(e) => setListName(e.target.value)}
-            />
 
             {/* Date From */}
             <Popover>
@@ -273,7 +266,7 @@ export function ShoppingListPanel() {
             </Button>
             <Button
               onClick={() => saveList()}
-              disabled={!listName || !dateFrom || !dateTo || isPending}
+              disabled={!dateFrom || !dateTo || isPending}
             >
               {isPending ? "Salvataggio..." : "Salva"}
             </Button>

@@ -10,7 +10,6 @@ export type ShoppingListItem = {
 export type ShoppingListFromServer = {
   id: string;
   userId: string;
-  name: string;
   dateFrom: string;
   dateTo: string;
   items: ShoppingListItem[];
@@ -34,7 +33,6 @@ export const getShoppingList = async (id: string): Promise<ShoppingListFromServe
 // Create shopping list
 export const createShoppingList = async (payload: {
   userId: string;
-  name: string;
   dateFrom: string;
   dateTo: string;
   items: ShoppingListItem[];

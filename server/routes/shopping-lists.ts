@@ -27,15 +27,14 @@ router.get("/", async (req, res) => {
 // Create a shopping list
 router.post("/", async (req, res) => {
   try {
-    const { userId, name, dateFrom, dateTo, items } = req.body;
+    const { userId, dateFrom, dateTo, items } = req.body;
 
-    if (!userId || !name || !dateFrom || !dateTo || !items) {
+    if (!userId || !dateFrom || !dateTo || !items) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
     const newList = {
       userId,
-      name,
       dateFrom,
       dateTo,
       items, // MergedIngredient[] con checked: false
