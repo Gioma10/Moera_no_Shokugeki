@@ -96,7 +96,7 @@ export default function ShoppingLists() {
                   <Link key={list.id} href={`/shopping-lists/${list.id}`}>
                     <Card className={cn(
                       "shadow border-2 border-secondary hover:border-primary transition-all duration-200 cursor-pointer",
-                      isComplete && "opacity-60 grayscale-[30%]"
+                      isComplete && "opacity-60 grayscale-30"
                     )}>
                       <CardHeader className="py-3">
                         <div className="flex items-center justify-between gap-2">

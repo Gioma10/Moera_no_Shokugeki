@@ -79,23 +79,15 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Update checked state of an item
-router.patch("/:id/items/:index", async (req, res) => {
+// Save list items
+router.put("/:id/items", async (req, res) => {
   try {
-    const { id, index } = req.params;
-    const { checked } = req.body;
-
-    const docSnap = await db.collection("shopping-lists").doc(id).get();
-    if (!docSnap.exists) return res.status(404).json({ error: "List not found" });
-
-    const list = docSnap.data() as any;
-    list.items[Number(index)].checked = checked;
-
-    await db.collection("shopping-lists").doc(id).update({ items: list.items });
-
+    const { id } = req.params;
+    const { items } = req.body;
+    await db.collection("shopping-lists").doc(id).update({ items });
     res.status(200).json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: "Error updating item" });
+    res.status(500).json({ error: "Errore nel salvataggio" });
   }
 });
 

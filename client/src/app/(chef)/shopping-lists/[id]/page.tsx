@@ -1,15 +1,15 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeftIcon, ShoppingCart } from "lucide-react";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { ArrowLeftIcon, ShoppingCart, Save } from "lucide-react";
 import Link from "next/link";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { use } from "react";
-import { getShoppingList, updateShoppingListItem } from "@/api/shopping-lists";
-
+import { use, useEffect, useState } from "react";
+import { getShoppingList, saveShoppingListItems } from "@/api/shopping-lists";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function ShoppingListDetail({
   params,
@@ -17,32 +17,35 @@ export default function ShoppingListDetail({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
-  const queryClient = useQueryClient();
 
   const listQuery = useQuery({
     queryKey: ["shopping-list", id],
     queryFn: () => getShoppingList(id),
   });
 
-  const { mutate: toggleItem } = useMutation({
-    mutationFn: ({ index, checked }: { index: number; checked: boolean }) =>
-      updateShoppingListItem(id, index, checked),
-    onMutate: async ({ index, checked }) => {
-      // Optimistic update — aggiorna la UI prima della risposta del server
-      await queryClient.cancelQueries({ queryKey: ["shopping-list", id] });
-      const previous = queryClient.getQueryData(["shopping-list", id]);
-      queryClient.setQueryData(["shopping-list", id], (old: any) => ({
-        ...old,
-        items: old.items.map((item: any, i: number) =>
-          i === index ? { ...item, checked } : item,
-        ),
-      }));
-      return { previous };
-    },
-    onError: (_err, _vars, context) => {
-      queryClient.setQueryData(["shopping-list", id], context?.previous);
-    },
+  const [localItems, setLocalItems] = useState(listQuery.data?.items ?? []);
+  const [isDirty, setIsDirty] = useState(false);
+
+  // Inizializza localItems quando i dati arrivano dal server
+  useEffect(() => {
+    if (listQuery.data) {
+      setLocalItems(listQuery.data.items);
+    }
+  }, [listQuery.data]);
+
+  const { mutate: saveItems, isPending } = useMutation({
+    mutationFn: () => saveShoppingListItems(id, localItems),
+    onSuccess: () => setIsDirty(false),
   });
+
+  function toggleItem(index: number) {
+    setLocalItems((prev) =>
+      prev.map((item, i) =>
+        i === index ? { ...item, checked: !item.checked } : item,
+      ),
+    );
+    setIsDirty(true);
+  }
 
   if (listQuery.status === "pending") {
     return (
@@ -66,11 +69,11 @@ export default function ShoppingListDetail({
   }
 
   const list = listQuery.data;
-  const unchecked = list.items.filter((i) => !i.checked);
-  const checked = list.items.filter((i) => i.checked);
+  const unchecked = localItems.filter((i) => !i.checked);
+  const checked = localItems.filter((i) => i.checked);
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-lg mx-auto px-4 py-8 space-y-6 pb-28">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link
@@ -90,15 +93,13 @@ export default function ShoppingListDetail({
       {/* Progresso */}
       <div className="space-y-1.5">
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>
-            {checked.length} di {list.items.length} ingredienti
-          </span>
-          <span>{Math.round((checked.length / list.items.length) * 100)}%</span>
+          <span>{checked.length} di {localItems.length} ingredienti</span>
+          <span>{Math.round((checked.length / localItems.length) * 100)}%</span>
         </div>
         <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
           <div
             className="h-full bg-brand rounded-full transition-all duration-500"
-            style={{ width: `${(checked.length / list.items.length) * 100}%` }}
+            style={{ width: `${(checked.length / localItems.length) * 100}%` }}
           />
         </div>
       </div>
@@ -107,12 +108,12 @@ export default function ShoppingListDetail({
       {unchecked.length > 0 && (
         <ul className="space-y-2">
           {unchecked.map((item) => {
-            const index = list.items.indexOf(item);
+            const index = localItems.indexOf(item);
             return (
               <li
                 key={index}
-                onClick={() => toggleItem({ index, checked: true })}
-                className="flex items-center justify-between p-4 rounded-xl border-2 border-border bg-background cursor-pointer hover:border-brand hover:shadow-sm transition-all active:scale-98"
+                onClick={() => toggleItem(index)}
+                className="flex items-center justify-between p-4 rounded-xl border-2 border-border bg-background cursor-pointer hover:border-brand hover:shadow-sm transition-all active:scale-[0.98]"
               >
                 <span className="text-base font-medium">{item.ingredient}</span>
                 <span className="text-sm text-muted-foreground shrink-0 ml-2">
@@ -136,12 +137,12 @@ export default function ShoppingListDetail({
           </p>
           <ul className="space-y-2">
             {checked.map((item) => {
-              const index = list.items.indexOf(item);
+              const index = localItems.indexOf(item);
               return (
                 <li
                   key={index}
-                  onClick={() => toggleItem({ index, checked: false })}
-                  className="flex items-center justify-between p-4 rounded-xl border-2 border-border/50 bg-muted/30 cursor-pointer opacity-50 hover:opacity-70 transition-all active:scale-98"
+                  onClick={() => toggleItem(index)}
+                  className="flex items-center justify-between p-4 rounded-xl border-2 border-border/50 bg-muted/30 cursor-pointer opacity-50 hover:opacity-70 transition-all active:scale-[0.98]"
                 >
                   <span className="text-base font-medium line-through">
                     {item.ingredient}
@@ -161,15 +162,28 @@ export default function ShoppingListDetail({
       )}
 
       {/* Tutto completato */}
-      {unchecked.length === 0 && list.items.length > 0 && (
+      {unchecked.length === 0 && localItems.length > 0 && (
         <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
           <ShoppingCart className="w-12 h-12 text-brand opacity-80" />
-          <p className="text-lg font-semibold text-foreground">
-            Spesa completata! 🎉
-          </p>
+          <p className="text-lg font-semibold text-foreground">Spesa completata! 🎉</p>
           <p className="text-sm">Hai preso tutti gli ingredienti</p>
         </div>
       )}
+
+      {/* Bottone salva — fisso in basso, visibile solo se ci sono modifiche */}
+      <div className={cn(
+        "fixed bottom-6 left-0 right-0 flex justify-center z-50 px-4 transition-all duration-300",
+        isDirty ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4 pointer-events-none"
+      )}>
+        <button
+          onClick={() => saveItems()}
+          disabled={isPending}
+          className="flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-brand text-white font-semibold shadow-xl hover:bg-brand/90 active:scale-95 transition-all disabled:opacity-50"
+        >
+          <Save className="w-4 h-4" />
+          {isPending ? "Salvataggio..." : "Salva progressi"}
+        </button>
+      </div>
     </div>
   );
 }

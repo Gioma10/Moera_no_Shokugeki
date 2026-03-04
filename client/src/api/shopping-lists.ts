@@ -62,21 +62,17 @@ export const createShoppingList = async (payload: {
   return res.json();
 };
 
-// Update item checked state
-export const updateShoppingListItem = async (
-  listId: string,
-  itemIndex: number,
-  checked: boolean,
+// api/shopping-lists.ts
+export const saveShoppingListItems = async (
+  id: string,
+  items: ShoppingListItem[],
 ): Promise<void> => {
-  const res = await fetch(
-    `${BASE_URL}/api/shopping-lists/${listId}/items/${itemIndex}`,
-    {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ checked }),
-    },
-  );
-  if (!res.ok) throw new Error("Errore nell'aggiornamento");
+  const res = await fetch(`${BASE_URL}/api/shopping-lists/${id}/items`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ items }),
+  });
+  if (!res.ok) throw new Error("Errore nel salvataggio");
 };
 
 // Delete shopping list
