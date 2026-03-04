@@ -1,7 +1,13 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeftIcon, ShoppingCart, Trash2, ExternalLink } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  ShoppingCart,
+  Trash2,
+  ExternalLink,
+  CheckIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { match } from "ts-pattern";
 import { format } from "date-fns";
@@ -15,7 +21,8 @@ import { AlertCircle } from "lucide-react";
 
 export default function ShoppingLists() {
   const authState = useAuth();
-  const userId = authState.status === "authenticated" ? authState.user.uid : null;
+  const userId =
+    authState.status === "authenticated" ? authState.user.uid : null;
   const queryClient = useQueryClient();
 
   const listsQuery = useQuery({
@@ -26,7 +33,8 @@ export default function ShoppingLists() {
 
   const { mutate: onDelete } = useMutation({
     mutationFn: (id: string) => deleteShoppingList(id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["shopping-lists"] }),
+    onSuccess: () =>
+      queryClient.invalidateQueries({ queryKey: ["shopping-lists"] }),
   });
 
   return (
@@ -59,54 +67,71 @@ export default function ShoppingLists() {
           .with({ status: "pending" }, () =>
             Array.from({ length: 3 }, (_, i) => (
               <Card key={i} className="animate-pulse h-24" />
-            ))
+            )),
           )
           .with({ status: "success" }, ({ data: lists }) =>
             lists.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-20 gap-4 text-muted-foreground">
                 <ShoppingCart className="w-14 h-14 opacity-20" />
                 <p className="text-lg font-medium">Nessuna lista salvata</p>
-                <p className="text-sm">Crea la tua prima lista dalla pagina ricette</p>
+                <p className="text-sm">
+                  Crea la tua prima lista dalla pagina ricette
+                </p>
               </div>
             ) : (
-              lists.map((list) => (
-                <Card key={list.id} className="shadow border-2 border-secondary hover:border-primary transition-all duration-200">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="text-lg font-bold">{list.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {format(new Date(list.dateFrom), "dd MMM", { locale: it })} →{" "}
-                          {format(new Date(list.dateTo), "dd MMM yyyy", { locale: it })}
-                        </p>
-                      </div>
-                      <span className="text-xs bg-muted rounded-full px-2 py-1 shrink-0">
-                        {list.items.length} ingredienti
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex gap-2">
-                      <Link href={`/shopping-lists/${list.id}`} className="flex-1">
-                        <Button size="sm" className="w-full gap-1.5">
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          Apri lista
-                        </Button>
-                      </Link>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => onDelete(list.id)}
-                        className="gap-1.5"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                        Elimina
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )
+              lists.map((list) => {
+                const total = list.items.length;
+                const checkedCount = list.items.filter((i) => i.checked).length;
+                const isComplete = checkedCount === total;
+
+                return (
+                  <Link href={`/shopping-lists/${list.id}`}>
+                    <Card
+                      key={list.id}
+                      className="shadow border-2 border-secondary hover:border-primary transition-all duration-200"
+                    >
+                      <CardHeader className="py-3">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-base font-semibold">
+                            {format(new Date(list.dateFrom), "dd MMM", {
+                              locale: it,
+                            })}{" "}
+                            →{" "}
+                            {format(new Date(list.dateTo), "dd MMM yyyy", {
+                              locale: it,
+                            })}
+                          </span>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {isComplete ? (
+                              <span className="flex items-center gap-1 text-xs bg-green-100 text-green-700 rounded-full px-2 py-1 font-medium">
+                                <CheckIcon className="w-3 h-3" />
+                                Completata
+                              </span>
+                            ) : (
+                              <span className="text-xs bg-muted rounded-full px-2 py-1">
+                                {checkedCount}/{total}
+                              </span>
+                            )}
+                            <Button
+                              size="icon"
+                              variant="destructive"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                onDelete(list.id);
+                              }}
+                              className="cusor-pointer"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </CardHeader>
+                    </Card>
+                  </Link>
+                );
+              })
+            ),
           )
           .exhaustive()}
       </div>
