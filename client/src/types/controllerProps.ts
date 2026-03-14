@@ -1,6 +1,6 @@
-import type { Control, FieldValues } from "react-hook-form";
+import type { Control } from "react-hook-form";
 
 export type ControllerProps = {
   name: string;
-  control: Control<FieldValues>;
+  control: Control<any>;
 };
