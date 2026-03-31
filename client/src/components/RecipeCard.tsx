@@ -119,7 +119,7 @@ export const RecipeCard = ({ recipe }: { recipe: RecipeFromServer }) => {
                 e.stopPropagation();
                 onDelete(recipe.id);
               }}
-              className="absolute bottom-3 right-3 p-1.5 rounded-full bg-black/40 backdrop-blur-sm text-white/70 hover:bg-red-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+              className="absolute bottom-3 right-3 p-1.5 rounded-full bg-black/40 backdrop-blur-sm text-white/70 hover:bg-red-500 hover:text-white transition-all"
             >
               <Trash2 className="w-4 h-4" />
             </button>
