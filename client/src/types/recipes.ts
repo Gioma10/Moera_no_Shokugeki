@@ -9,10 +9,13 @@ export const RecipeSchema = z.object({
   rating: z.number().min(1, "Dai un voto alla ricetta"),
   difficulty: z.string().min(1, "Scegli una difficoltà"),
   stimatedTime: z
-    .number({ error: "Inserisci il tempo in minuti" })
-    .min(1, { message: "Inserisci il tempo in minuti" }),
+    .number({ error: "Scegli il tempo" })
+    .min(30, { message: "Scegli il tempo" })
+    .multipleOf(30, { message: "Scegli un tempo a passi di 30 minuti" }),
   temperature: z.enum(["cold", "hot"], { error: "Scegli caldo o freddo" }),
-  category: z.enum(["firstCourse", "secondCourse", "dessert", "starter"], { error: "Scegli una categoria" }),
+  category: z.enum(["firstCourse", "secondCourse", "dessert", "starter"], {
+    error: "Scegli una categoria",
+  }),
   ingredients: z
     .array(
       z.object({
@@ -22,7 +25,9 @@ export const RecipeSchema = z.object({
           .refine((val) => val === "" || !Number.isNaN(Number(val)), {
             message: "La quantità deve essere un numero",
           }),
-        unit: z.enum(["g", "l", "ml", "pcs", "q.b.", ""]).refine(value => value !== "", "Scegli un’unità"),
+        unit: z
+          .enum(["g", "l", "ml", "pcs", "q.b.", ""])
+          .refine((value) => value !== "", "Scegli un’unità"),
       }),
     )
     .min(1, "Inserisci almeno un ingrediente"),
@@ -30,6 +35,8 @@ export const RecipeSchema = z.object({
   note: z.string().optional(),
   method: z.string(),
   master: z.enum(["moe", "nowy"]).optional(),
+  // Set by the server's calorie estimate; never edited in the form.
+  kcalPer100g: z.number().optional(),
 });
 
 export type IngredientData = {

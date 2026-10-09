@@ -3,7 +3,9 @@ import { requireApproved } from "../middleware/auth.ts";
 import { Router } from "express";
 import multer from "multer";
 import cloudinary from "../cloudinaryConfig.ts";
-import { db } from "../firebase.ts";
+import { admin, db } from "../firebase.ts";
+import { estimateCalories } from "../services/estimate-calories.ts";
+import { GeminiError } from "../services/gemini.ts";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -173,17 +175,49 @@ router.put("/:id", upload.single("image"), async (req, res) => {
       method,
       master,
     };
-    await docRef.update(updated);
+    // A calorie estimate no longer matches once the ingredients change.
+    const caloriesStale = JSON.stringify(current.ingredients) !== JSON.stringify(parsedIngredients);
+    await docRef.update(
+      caloriesStale
+        ? { ...updated, kcalPer100g: admin.firestore.FieldValue.delete() }
+        : updated,
+    );
 
     // Remove the replaced image only once the recipe points to the new one.
     if (req.file && current.public_id) {
       await cloudinary.uploader.destroy(current.public_id).catch(error => console.error(error));
     }
 
-    res.status(200).json({ id: docRef.id, ...current, ...updated });
+    const { kcalPer100g, ...rest } = current;
+    res.status(200).json({
+      id: docRef.id,
+      ...rest,
+      ...(caloriesStale ? {} : { kcalPer100g }),
+      ...updated,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Error on recipe update" });
+  }
+});
+
+// Estimate and save kcal per 100 g from the ingredients (uses the shared Gemini quota).
+router.post("/:id/calories", requireApproved, async (req, res) => {
+  try {
+    // A preceding middleware widens the params type; ":id" is always present here.
+    const docRef = db.collection("recipes").doc(req.params.id as string);
+    const recipe = (await docRef.get()).data();
+    if (!recipe) return res.status(404).json({ error: "Ricetta non trovata." });
+    if (!Array.isArray(recipe.ingredients) || !recipe.ingredients.length) {
+      return res.status(400).json({ error: "Aggiungi gli ingredienti prima di calcolare le calorie." });
+    }
+    const { kcalPer100g } = await estimateCalories(recipe.ingredients);
+    await docRef.update({ kcalPer100g });
+    res.status(200).json({ kcalPer100g });
+  } catch (error) {
+    if (error instanceof GeminiError) return res.status(error.status).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: "Calcolo delle calorie non riuscito. Riprova." });
   }
 });
 

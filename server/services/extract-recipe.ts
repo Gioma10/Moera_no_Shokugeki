@@ -1,9 +1,5 @@
 import { EXTRACTION_JSON_SCHEMA, parseExtraction } from "../types/extracted-recipe.ts";
-
-export class ExtractionError extends Error {
-  status: number;
-  constructor(status: number, message: string) { super(message); this.status = status; }
-}
+import { GeminiError, generateJson } from "./gemini.ts";
 
 // HEIC/HEIF is an ISO-BMFF container: "ftyp" at byte 4, major brand at byte 8.
 // AVIF shares the container but has its own brand, so it is not matched.
@@ -46,74 +42,17 @@ note: note presenti nella fonte ed eventuali misure originali non rappresentabil
 warnings: elenco breve in italiano delle ambiguità e parti illeggibili; nessuna introduzione generica.
 Restituisci solo l'oggetto JSON richiesto.`;
 
-// Free-tier models are often overloaded (500/503) or slow: retry once on a lighter model.
-const FALLBACK_MODEL = "gemini-flash-lite-latest";
-const ATTEMPT_TIMEOUT_MS = 45000;
-const RETRYABLE = new Set([500, 502, 503, 504]);
-
-class RetryableError extends Error {}
-
-async function requestGemini(model: string, key: string, buffer: Buffer, mimeType: string, fetcher: typeof fetch) {
-  const signal = AbortSignal.timeout(ATTEMPT_TIMEOUT_MS);
-  let response: Response;
-  try {
-    response = await fetcher(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
-      method: "POST", signal,
-      headers: { "Content-Type": "application/json", "x-goog-api-key": key },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: PROMPT }] },
-        contents: [{ role: "user", parts: [{ inlineData: { mimeType, data: buffer.toString("base64") } }, { text: "Estrai i dati della ricetta da questa foto." }] }],
-        // Transcribing needs little reasoning; Gemini 3 models are tuned for the default temperature.
-        generationConfig: { thinkingConfig: { thinkingLevel: "low" }, maxOutputTokens: 16384, responseMimeType: "application/json", responseJsonSchema: EXTRACTION_JSON_SCHEMA },
-      }),
-    });
-  } catch {
-    console.error(`[gemini] model=${model} ${signal.aborted ? "timeout" : "network error"}`);
-    throw new RetryableError(signal.aborted ? "timeout" : "network");
-  }
-  if (!response.ok) {
-    // Google's error body never contains the key; log it so configuration problems are diagnosable.
-    const body = await response.json().catch(() => null) as { error?: { message?: string; status?: string; details?: { reason?: string }[] } } | null;
-    const reason = body?.error?.details?.find(d => d.reason)?.reason ?? body?.error?.status ?? "";
-    console.error(`[gemini] ${response.status} model=${model} ${reason}: ${body?.error?.message ?? "no message"}`);
-    if (RETRYABLE.has(response.status)) throw new RetryableError(String(response.status));
-    if (response.status === 429) throw new ExtractionError(429, "Quota Gemini raggiunta o troppe richieste. Riprova più tardi oppure continua a mano.");
-    if (response.status === 404) throw new ExtractionError(503, `Il modello Gemini "${model}" non è disponibile. Imposta GEMINI_MODEL in server/.env con un modello attivo.`);
-    if (reason === "API_KEY_INVALID" || response.status === 401 || response.status === 403) throw new ExtractionError(503, "La chiave Gemini non è valida o non ha accesso a questo modello. Controlla GEMINI_API_KEY in server/.env.");
-    if (response.status === 400) throw new ExtractionError(503, "Gemini ha rifiutato la richiesta. Controlla il log del server per il dettaglio.");
-    throw new ExtractionError(502, "Il servizio di lettura non risponde. Riprova tra poco.");
-  }
-  return response.json() as Promise<{ candidates?: { finishReason?: string; content?: { parts?: { text?: string; thought?: boolean }[] } }[] }>;
-}
-
 export async function extractRecipe(buffer: Buffer, mimeType: string, fetcher: typeof fetch = fetch) {
-  const key = process.env.GEMINI_API_KEY?.trim();
-  if (!key) throw new ExtractionError(503, "L’importazione non è ancora configurata. Puoi compilare la ricetta a mano.");
-  const models = [...new Set([process.env.GEMINI_MODEL?.trim() || "gemini-flash-latest", FALLBACK_MODEL])];
-
-  let result;
-  let lastFailure = "";
-  for (const model of models) {
-    try { result = await requestGemini(model, key, buffer, mimeType, fetcher); break; }
-    catch (error) {
-      if (!(error instanceof RetryableError)) throw error;
-      lastFailure = error.message;
-    }
-  }
-  if (!result) {
-    if (lastFailure === "timeout") throw new ExtractionError(504, "La lettura sta impiegando troppo tempo. Riprova tra poco.");
-    if (lastFailure === "network") throw new ExtractionError(502, "Impossibile contattare il servizio di lettura. Riprova tra poco.");
-    throw new ExtractionError(503, "Gemini è sovraccarico in questo momento. Riprova tra qualche minuto oppure continua a mano.");
-  }
-
-  const candidate = result.candidates?.[0];
-  if (candidate?.finishReason !== "STOP") throw new ExtractionError(422, "Non riesco a leggere una ricetta completa. Prova una foto più nitida con una sola ricetta.");
-  const text = candidate.content?.parts?.filter(p => !p.thought).map(p => p.text ?? "").join("");
+  const json = await generateJson({
+    systemInstruction: PROMPT,
+    parts: [{ inlineData: { mimeType, data: buffer.toString("base64") } }, { text: "Estrai i dati della ricetta da questa foto." }],
+    responseJsonSchema: EXTRACTION_JSON_SCHEMA,
+  }, fetcher);
   let extraction;
-  try { extraction = parseExtraction(JSON.parse(text || "")); }
-  catch { throw new ExtractionError(502, "La risposta non è utilizzabile. Riprova con una foto più chiara o compila a mano."); }
+  try { extraction = parseExtraction(json); }
+  catch { throw new GeminiError(502, "La risposta non è utilizzabile. Riprova con una foto più chiara o compila a mano."); }
   if (!extraction.isRecipe || (!extraction.recipe.ingredients?.length && !extraction.recipe.preparation)) {
-    throw new ExtractionError(422, "Non ho trovato una ricetta scritta leggibile. Fotografa ingredienti e procedimento, una ricetta alla volta.");
+    throw new GeminiError(422, "Non ho trovato una ricetta scritta leggibile. Fotografa ingredienti e procedimento, una ricetta alla volta.");
   }
   return extraction;
 }

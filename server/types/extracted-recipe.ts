@@ -96,7 +96,8 @@ export function parseExtraction(value: unknown): RecipeExtraction {
   if (!isRecord(value) || typeof value.isRecipe !== "boolean" || !isRecord(value.recipe)) throw new Error("Invalid extraction");
   const r = value.recipe;
   const minutes = typeof r.stimatedTime === "number" && Number.isFinite(r.stimatedTime) && r.stimatedTime >= 1 && r.stimatedTime <= 525600
-    ? Math.round(r.stimatedTime) : null;
+    // The form offers 30-minute steps only.
+    ? Math.max(30, Math.round(r.stimatedTime / 30) * 30) : null;
   const ingredients = Array.isArray(r.ingredients)
     ? r.ingredients.filter(isRecord).slice(0, 100).map(i => ({
         ingredient: capitalized(text(i.ingredient)),

@@ -37,6 +37,7 @@ import { RatingInput } from "@/components/CreateRecipe/RatingInput";
 import { StimatedTime } from "@/components/CreateRecipe/StimatedTime";
 import { Temperature } from "@/components/CreateRecipe/Temperature";
 import { DeleteRecipeDialog } from "@/components/DeleteRecipeDialog";
+import { CaloriesCard } from "@/components/RecipeDetail/CaloriesCard";
 import { EditBlockDialog } from "@/components/RecipeDetail/EditBlockDialog";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -52,6 +53,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/context/AuthContext";
+import { formatMinutes } from "@/lib/time";
 import type { Recipe } from "@/types/recipes";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -211,7 +213,7 @@ function RecipeDetail({ id, recipe }: { id: string; recipe: Recipe }) {
         <InfoCard
           icon={<Clock className="w-5 h-5 text-blue-500" />}
           label="Tempo"
-          value={`${recipe.stimatedTime} min`}
+          value={formatMinutes(recipe.stimatedTime)}
           bg="bg-blue-50"
           action={
             <EditBlockDialog
@@ -406,6 +408,8 @@ function RecipeDetail({ id, recipe }: { id: string; recipe: Recipe }) {
           </p>
         </CardContent>
       </Card>
+
+      <CaloriesCard id={id} kcalPer100g={recipe.kcalPer100g} />
     </div>
   );
 }

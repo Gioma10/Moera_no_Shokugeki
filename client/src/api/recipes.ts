@@ -69,7 +69,13 @@ export function recipeToFormData(data: Recipe) {
 }
 
 // Update a recipe
-export const updateRecipe = async ({ id, data }: { id: string; data: FormData }) => {
+export const updateRecipe = async ({
+  id,
+  data,
+}: {
+  id: string;
+  data: FormData;
+}) => {
   const res = await fetch(`${BASE_URL}/api/recipes/${id}`, {
     method: "PUT",
     body: data,
@@ -107,10 +113,37 @@ export async function extractRecipePhoto(image: File, signal?: AbortSignal) {
   const body = new FormData();
   body.append("image", await shrinkForReading(image));
   const response = await fetch(`${BASE_URL}/api/recipes/extract`, {
-    method: "POST", headers: { Authorization: `Bearer ${token}` }, body, signal,
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body,
+    signal,
   });
   const data = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(data?.error ?? "Importazione non riuscita. Riprova tra poco.");
-  if (!isRecipeExtraction(data)) throw new Error("La risposta ricevuta non è valida. Riprova tra poco.");
+  if (!response.ok)
+    throw new Error(
+      data?.error ?? "Importazione non riuscita. Riprova tra poco.",
+    );
+  if (!isRecipeExtraction(data))
+    throw new Error("La risposta ricevuta non è valida. Riprova tra poco.");
+  return data;
+}
+
+// Estimate kcal per 100 g with Gemini; the server saves it in the recipe.
+export async function estimateRecipeCalories(
+  id: string,
+): Promise<{ kcalPer100g: number }> {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Accedi per calcolare le calorie.");
+  const token = await user.getIdToken();
+  const response = await fetch(`${BASE_URL}/api/recipes/${id}/calories`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok || typeof data?.kcalPer100g !== "number") {
+    throw new Error(
+      data?.error ?? "Calcolo delle calorie non riuscito. Riprova.",
+    );
+  }
   return data;
 }
