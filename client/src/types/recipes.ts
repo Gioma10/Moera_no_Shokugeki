@@ -1,7 +1,8 @@
 import z from "zod";
 
 export const RecipeSchema = z.object({
-  image: z.union([z.instanceof(File), z.instanceof(Blob)], {
+  // A string is the URL of the image already saved (editing keeps it unless replaced).
+  image: z.union([z.instanceof(File), z.instanceof(Blob), z.string().min(1)], {
     error: "Aggiungi una foto della ricetta",
   }),
   title: z.string().trim().min(1, "Inserisci il nome della ricetta"),

@@ -112,6 +112,81 @@ router.post("/", upload.single("image"), async (req, res) => {
 
 router.use(createExtractionRouter(requireApproved));
 
+// Update a recipe. The image is optional: without a new file the current one is kept.
+router.put("/:id", upload.single("image"), async (req, res) => {
+  try {
+    // The multer middleware widens the params type; ":id" is always present here.
+    const docRef = db.collection("recipes").doc(req.params.id as string);
+    const current = (await docRef.get()).data();
+    if (!current) return res.status(404).json({ error: "Recipe not found" });
+
+    const {
+      title,
+      rating,
+      difficulty,
+      stimatedTime,
+      temperature,
+      category,
+      ingredients,
+      preparation,
+      note,
+      method,
+      master,
+    } = req.body;
+
+    let parsedIngredients;
+    try {
+      parsedIngredients = JSON.parse(ingredients);
+    } catch {
+      return res
+        .status(400)
+        .json({ error: "Ingredients must be a valid JSON array" });
+    }
+
+    let image = { image: current.image, public_id: current.public_id };
+    if (req.file) {
+      const file = req.file;
+      const result = await new Promise<any>((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          { folder: "recipes" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+        stream.end(file.buffer);
+      });
+      image = { image: result.secure_url, public_id: result.public_id };
+    }
+
+    const updated = {
+      ...image,
+      title,
+      rating: Number(rating),
+      difficulty,
+      stimatedTime: Number(stimatedTime),
+      temperature,
+      category,
+      ingredients: parsedIngredients,
+      preparation,
+      note: note || "",
+      method,
+      master,
+    };
+    await docRef.update(updated);
+
+    // Remove the replaced image only once the recipe points to the new one.
+    if (req.file && current.public_id) {
+      await cloudinary.uploader.destroy(current.public_id).catch(error => console.error(error));
+    }
+
+    res.status(200).json({ id: docRef.id, ...current, ...updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Error on recipe update" });
+  }
+});
+
 // Delete recipe
 router.delete("/:id", async (req, res) => {
   try {

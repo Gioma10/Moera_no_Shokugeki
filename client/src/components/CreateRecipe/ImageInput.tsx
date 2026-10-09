@@ -14,6 +14,7 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
   const value = useWatch({ name, control });
   const [preview, setPreview] = useState<string | null>(null);
   useEffect(() => {
+    if (typeof value === "string") { setPreview(value); return; }
     if (!(value instanceof Blob)) { setPreview(null); return; }
     const url = URL.createObjectURL(value);
     setPreview(url);
