@@ -1,5 +1,8 @@
 "use client";
 
+import { RecipePhotoImport } from "@/components/CreateRecipe/RecipePhotoImport";
+import { mergeRecipeImport } from "@/lib/recipe-import";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import {
@@ -52,10 +55,14 @@ const CreateRecipe = () => {
       title: "",
       rating: 0,
       difficulty: "",
+      ingredients: [],
+      preparation: "",
+      note: "",
+      method: "",
     },
   });
 
-  const { mutate: onCreate, isPending } = useMutation({
+  const { mutate: onCreate, isPending, error: saveError } = useMutation({
     mutationFn: createRecipe,
     onSuccess: () => {
       form.reset();
@@ -116,6 +123,14 @@ const CreateRecipe = () => {
         </div>
       </div>
 
+      <RecipePhotoImport
+        onApply={(recipe, overwrite) => {
+          form.reset(mergeRecipeImport(form.getValues(), recipe, overwrite), { keepDefaultValues: true });
+          setStep("first");
+        }}
+        onUseAsCover={(file) => form.setValue("image", file, { shouldValidate: true })}
+      />
+
       {/* Step indicator */}
       <div className="w-full max-w-3xl">
         <StepsBar step={step} />
@@ -128,7 +143,10 @@ const CreateRecipe = () => {
       <Card className="w-full max-w-3xl rounded-3xl border-0 shadow-sm bg-white p-6 sm:p-10">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, errors => {
+              const firstInvalid = steps.find(step => stepFields[step].some(field => errors[field]));
+              if (firstInvalid) setStep(firstInvalid);
+            })}
             className="flex flex-col gap-6"
           >
             {match(step)
@@ -137,6 +155,7 @@ const CreateRecipe = () => {
               .with("third", () => <ThirdStep form={form} isAdmin={isAdmin} />)
               .exhaustive()}
 
+            {saveError && <p role="alert" className="text-sm text-destructive">Salvataggio non riuscito. I dati sono ancora nel form: riprova.</p>}
             {/* Navigation */}
             <div className="flex justify-between pt-2 border-t">
               {step !== "first" ? (

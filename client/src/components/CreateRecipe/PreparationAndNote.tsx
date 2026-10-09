@@ -1,5 +1,5 @@
 import type { ControllerProps } from "@/types/controllerProps";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Textarea } from "../ui/textarea";
 
 export const Preparation: React.FC<ControllerProps> = ({ name, control }) => {
@@ -21,6 +21,7 @@ export const Preparation: React.FC<ControllerProps> = ({ name, control }) => {
               />
             </div>
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />
@@ -46,6 +47,7 @@ export const Note: React.FC<ControllerProps> = ({ name, control }) => {
               />
             </div>
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />

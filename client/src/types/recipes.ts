@@ -2,16 +2,16 @@ import z from "zod";
 
 export const RecipeSchema = z.object({
   image: z.union([z.instanceof(File), z.instanceof(Blob)], {
-    error: "Image is required",
+    error: "Aggiungi una foto della ricetta",
   }),
-  title: z.string().min(1, "Title is required"),
-  rating: z.number().min(1),
-  difficulty: z.string().min(1, "Difficulty is required"),
+  title: z.string().trim().min(1, "Inserisci il nome della ricetta"),
+  rating: z.number().min(1, "Dai un voto alla ricetta"),
+  difficulty: z.string().min(1, "Scegli una difficoltà"),
   stimatedTime: z
-    .number({ error: "Stimated Time must be a number" })
-    .min(1, { message: "Time must be greater than 0" }), // > 0
-  temperature: z.enum(["cold", "hot"]),
-  category: z.enum(["firstCourse", "secondCourse", "dessert", "starter"]),
+    .number({ error: "Inserisci il tempo in minuti" })
+    .min(1, { message: "Inserisci il tempo in minuti" }),
+  temperature: z.enum(["cold", "hot"], { error: "Scegli caldo o freddo" }),
+  category: z.enum(["firstCourse", "secondCourse", "dessert", "starter"], { error: "Scegli una categoria" }),
   ingredients: z
     .array(
       z.object({
@@ -19,9 +19,9 @@ export const RecipeSchema = z.object({
         quantity: z
           .string()
           .refine((val) => val === "" || !Number.isNaN(Number(val)), {
-            message: "Quantity must be a number",
+            message: "La quantità deve essere un numero",
           }),
-        unit: z.enum(["g", "l", "ml", "pcs", "q.b."]),
+        unit: z.enum(["g", "l", "ml", "pcs", "q.b.", ""]).refine(value => value !== "", "Scegli un’unità"),
       }),
     )
     .min(1, "Inserisci almeno un ingrediente"),

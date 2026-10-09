@@ -1,7 +1,7 @@
 import { FlameIcon, SnowflakeIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { ControllerProps } from "@/types/controllerProps";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 
 export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
   return (
@@ -14,6 +14,8 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
             <div className="flex rounded-xl overflow-hidden border border-muted h-9 w-20 shrink-0">
               <button
                 type="button"
+                aria-label="Servire freddo"
+                aria-pressed={field.value === "cold"}
                 onClick={() => field.onChange("cold")}
                 className={cn(
                   "flex-1 flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-cyan-100",
@@ -29,6 +31,8 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
 
               <button
                 type="button"
+                aria-label="Servire caldo"
+                aria-pressed={field.value === "hot"}
                 onClick={() => field.onChange("hot")}
                 className={cn(
                   "flex-1 flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-red-100",
@@ -41,6 +45,7 @@ export const Temperature: React.FC<ControllerProps> = ({ name, control }) => {
               </button>
             </div>
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />

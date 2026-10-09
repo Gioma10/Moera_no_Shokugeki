@@ -3,21 +3,28 @@
 import { ImageIcon, XIcon } from "lucide-react";
 import Image from "next/image";
 import type React from "react";
-import { useRef } from "react";
-import type { ControllerRenderProps } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { useWatch, type ControllerRenderProps } from "react-hook-form";
 import type { ControllerProps } from "@/types/controllerProps";
 import { fileCompression } from "@/utils/fileCompression";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 
 const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
   const inputRef = useRef<HTMLInputElement>(null);
+  const value = useWatch({ name, control });
+  const [preview, setPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (!(value instanceof Blob)) { setPreview(null); return; }
+    const url = URL.createObjectURL(value);
+    setPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [value]);
 
   return (
     <FormField
       name={name}
       control={control}
       render={({ field }) => {
-        const preview = field.value ? URL.createObjectURL(field.value) : null;
         const removeImage = (field: ControllerRenderProps) => {
           field.onChange(null);
           if (inputRef.current) {
@@ -40,8 +47,9 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
                     />
                     <button
                       type="button"
+                      aria-label="Rimuovi foto della ricetta"
                       onClick={() => removeImage(field)}
-                      className="absolute top-1 right-1 z-10 bg-white rounded-full p-1 shadow-md opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:bg-red-500 hover:text-white"
+                      className="absolute top-1 right-1 z-10 bg-white rounded-full p-1 shadow-md opacity-100 transition-opacity cursor-pointer hover:bg-red-500 hover:text-white"
                     >
                       <XIcon size={12} />
                     </button>
@@ -59,6 +67,7 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
                   id="file"
                   ref={inputRef}
                   type="file"
+                  accept="image/jpeg,image/png,image/webp"
                   className="hidden"
                   onChange={async (e) => {
                     const file = e.target.files?.[0];
@@ -70,6 +79,7 @@ const ImageInput: React.FC<ControllerProps> = ({ name, control }) => {
                 />
               </div>
             </FormControl>
+            <FormMessage />
           </FormItem>
         );
       }}

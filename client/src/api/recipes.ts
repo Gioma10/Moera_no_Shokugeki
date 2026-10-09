@@ -1,6 +1,9 @@
+import { auth } from "@/lib/firebase";
+import { shrinkForReading } from "@/lib/recipe-import";
+import { isRecipeExtraction } from "@/types/recipe-extraction";
 import type { IngredientData } from "@/types/recipes";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 export type RecipeFromServer = {
   id: string;
@@ -66,3 +69,18 @@ export const getRecipe = async (id: string) => {
 
   return res.json();
 };
+
+export async function extractRecipePhoto(image: File, signal?: AbortSignal) {
+  const user = auth.currentUser;
+  if (!user) throw new Error("Accedi per importare una ricetta.");
+  const token = await user.getIdToken();
+  const body = new FormData();
+  body.append("image", await shrinkForReading(image));
+  const response = await fetch(`${BASE_URL}/api/recipes/extract`, {
+    method: "POST", headers: { Authorization: `Bearer ${token}` }, body, signal,
+  });
+  const data = await response.json().catch(() => null);
+  if (!response.ok) throw new Error(data?.error ?? "Importazione non riuscita. Riprova tra poco.");
+  if (!isRecipeExtraction(data)) throw new Error("La risposta ricevuta non è valida. Riprova tra poco.");
+  return data;
+}

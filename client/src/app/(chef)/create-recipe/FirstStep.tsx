@@ -38,6 +38,7 @@ export const FirstStep = ({
             <FormControl>
               <Input
                 className="rounded-xl py-5 bg-muted/40 border-0 focus-visible:ring-1 focus-visible:ring-orange-400 text-base"
+                aria-label="Titolo della ricetta"
                 placeholder="Nome della ricetta..."
                 {...field}
               />

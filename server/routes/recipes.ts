@@ -1,3 +1,5 @@
+import { createExtractionRouter } from "./recipe-extraction.ts";
+import { requireApproved } from "../middleware/auth.ts";
 import { Router } from "express";
 import multer from "multer";
 import cloudinary from "../cloudinaryConfig.ts";
@@ -107,6 +109,8 @@ router.post("/", upload.single("image"), async (req, res) => {
     res.status(500).json({ error: "Error on recipe creation" });
   }
 });
+
+router.use(createExtractionRouter(requireApproved));
 
 // Delete recipe
 router.delete("/:id", async (req, res) => {

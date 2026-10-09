@@ -7,7 +7,7 @@ export const RatingInput: React.FC<ControllerProps> = ({ control, name }) => {
     <Controller
       name={name}
       control={control}
-      render={({ field }) => {
+      render={({ field, fieldState }) => {
         return (
           <div className="flex flex-col gap-1">
             <span className="text-xs text-muted-foreground font-medium uppercase tracking-wide">
@@ -28,6 +28,7 @@ export const RatingInput: React.FC<ControllerProps> = ({ control, name }) => {
                 );
               })}
             </div>
+            {fieldState.error && <p className="text-sm text-destructive">{fieldState.error.message}</p>}
           </div>
         );
       }}

@@ -1,5 +1,5 @@
 import type { ControllerProps } from "@/types/controllerProps";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 
 export const StimatedTime: React.FC<ControllerProps> = ({ name, control }) => {
@@ -25,6 +25,7 @@ export const StimatedTime: React.FC<ControllerProps> = ({ name, control }) => {
               </span>
             </div>
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />

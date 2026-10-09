@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { ControllerProps } from "@/types/controllerProps";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 
 export const Master: React.FC<ControllerProps> = ({ name, control }) => {
   return (
@@ -47,6 +47,7 @@ export const Master: React.FC<ControllerProps> = ({ name, control }) => {
               </div>
             </div>
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />

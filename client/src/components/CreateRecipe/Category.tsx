@@ -1,5 +1,5 @@
 import type { ControllerProps } from "@/types/controllerProps";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import {
   Select,
   SelectContent,
@@ -16,7 +16,7 @@ export const Category: React.FC<ControllerProps> = ({ name, control }) => {
       render={({ field }) => (
         <FormItem>
           <FormControl>
-            <Select onValueChange={field.onChange} defaultValue={field.value}>
+            <Select onValueChange={field.onChange} value={field.value ?? ""}>
               <SelectTrigger className="w-full bg-muted/40 border-0 focus:ring-1 focus:ring-orange-400">
                 <SelectValue placeholder="Categoria" />
               </SelectTrigger>
@@ -28,6 +28,7 @@ export const Category: React.FC<ControllerProps> = ({ name, control }) => {
               </SelectContent>
             </Select>
           </FormControl>
+          <FormMessage />
         </FormItem>
       )}
     />

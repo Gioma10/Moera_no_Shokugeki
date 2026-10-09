@@ -1,13 +1,11 @@
-import { motion } from "framer-motion";
-import { ClipboardPlusIcon } from "lucide-react";
+import { ClipboardPlusIcon, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { Controller, type ControllerRenderProps } from "react-hook-form";
 import type { ControllerProps } from "@/types/controllerProps";
 import type { IngredientData } from "@/types/recipes";
-import { DotX } from "../DotX";
 import { Button } from "../ui/button";
 import { Card } from "../ui/card";
-import { FormControl, FormField, FormItem } from "../ui/form";
+import { FormControl, FormField, FormItem, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import {
   Select,
@@ -44,6 +42,7 @@ export const AddIngredient: React.FC<ControllerProps> = ({ name, control }) => {
           {/* Ingredient name */}
           <Input
             type="text"
+            aria-label="Nuovo ingrediente"
             placeholder="Ingrediente..."
             value={ingredient}
             onChange={(e) => setIngredient(e.target.value)}
@@ -60,11 +59,12 @@ export const AddIngredient: React.FC<ControllerProps> = ({ name, control }) => {
           <div className="flex gap-2">
             <Input
               type="text"
+              aria-label="Quantità del nuovo ingrediente"
               placeholder="Quantità"
               value={quantity}
               onChange={(e) => {
                 const val = e.target.value;
-                if (/^\d*$/.test(val)) setQuantity(val);
+                if (/^\d*([.,]\d*)?$/.test(val)) setQuantity(val.replace(",", "."));
               }}
               className="bg-muted/40 border-0 focus-visible:ring-1 focus-visible:ring-orange-400 flex-1 min-w-0"
             />
@@ -89,6 +89,7 @@ export const AddIngredient: React.FC<ControllerProps> = ({ name, control }) => {
               type="button"
               variant="outline"
               className="cursor-pointer shrink-0 bg-orange-500 hover:bg-orange-600 text-white border-0"
+              aria-label="Aggiungi ingrediente"
               onClick={() => onAdd(field)}
             >
               <ClipboardPlusIcon className="w-4 h-4" />
@@ -100,61 +101,39 @@ export const AddIngredient: React.FC<ControllerProps> = ({ name, control }) => {
   );
 };
 
-export const PreviewIngredients: React.FC<ControllerProps> = ({
-  name,
-  control,
-}) => {
-  const onDelete = (i: number, field: ControllerRenderProps) => {
-    const newList = field.value.filter(
-      (_: IngredientData, index: number) => i !== index,
-    );
-    field.onChange(newList);
-  };
-
-  return (
-    <FormField
-      name={name}
-      control={control}
-      render={({ field }) => (
-        <FormItem>
-          <FormControl>
-            <Card className="p-4 overflow-y-auto no-scrollbar h-48 sm:h-56 bg-muted/30 border-0 rounded-2xl">
-              <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                Ingredienti aggiunti
-              </h3>
-              {!field.value || field.value.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  Nessun ingrediente...
-                </p>
-              ) : (
-                <ul className="space-y-1">
-                  {(field.value || []).map((ing: IngredientData, i: number) => (
-                    <motion.li
-                      key={ing.ingredient}
-                      className="py-1.5 px-3 cursor-pointer hover:bg-red-50 rounded-xl flex items-center gap-3"
-                      initial="idle"
-                      whileHover="hover"
-                      onClick={() => onDelete(i, field)}
-                    >
-                      <DotX />
-                      <div className="flex-1 flex gap-2 items-baseline">
-                        <span className="text-sm font-medium">
-                          {ing.ingredient}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {ing.unit === "q.b."
-                            ? ing.unit
-                            : `${ing.quantity}${ing.unit}`}
-                        </span>
-                      </div>
-                    </motion.li>
-                  ))}
-                </ul>
-              )}
-            </Card>
-          </FormControl>
-        </FormItem>
-      )}
-    />
-  );
-};
+export const PreviewIngredients: React.FC<ControllerProps> = ({ name, control }) => (
+  <FormField name={name} control={control} render={({ field, fieldState }) => (
+    <FormItem>
+      <Card className="p-4 bg-muted/30 border-0 rounded-2xl">
+        <h3 className="text-sm font-semibold">Ingredienti da controllare</h3>
+        {!field.value?.length ? <p className="text-muted-foreground text-sm">Nessun ingrediente aggiunto.</p> : (
+          <ul className="space-y-4">
+            {field.value.map((_: unknown, index: number) => (
+              // Rows have no local state: their index is the form's array path.
+              // biome-ignore lint/suspicious/noArrayIndexKey: indexed react-hook-form field paths
+              <li key={index} className="space-y-2 border-b border-border pb-4 last:border-0 last:pb-0">
+                <FormField name={`${name}.${index}.ingredient`} control={control} render={({ field }) => (
+                  <FormItem><FormControl><Input {...field} value={field.value ?? ""} aria-label={`Ingrediente ${index + 1}`} placeholder="Nome ingrediente" /></FormControl><FormMessage /></FormItem>
+                )} />
+                <div className="flex items-start gap-2">
+                  <FormField name={`${name}.${index}.quantity`} control={control} render={({ field }) => (
+                    <FormItem className="min-w-0 flex-1"><FormControl><Input {...field} value={field.value ?? ""} inputMode="decimal" aria-label={`Quantità ingrediente ${index + 1}`} placeholder="Quantità" onChange={event => field.onChange(event.target.value.replace(",", "."))} /></FormControl><FormMessage /></FormItem>
+                  )} />
+                  <FormField name={`${name}.${index}.unit`} control={control} render={({ field }) => (
+                    <FormItem className="w-28"><Select value={field.value ?? ""} onValueChange={field.onChange}>
+                      <FormControl><SelectTrigger aria-label={`Unità ingrediente ${index + 1}`} className="w-full"><SelectValue placeholder="Unità" /></SelectTrigger></FormControl>
+                      <SelectContent>{["g", "l", "ml", "pcs", "q.b."].map(unit => <SelectItem key={unit} value={unit}>{unit}</SelectItem>)}</SelectContent>
+                    </Select><FormMessage /></FormItem>
+                  )} />
+                  <Button type="button" variant="outline" aria-label={`Elimina ingrediente ${index + 1}`} onClick={() => field.onChange(field.value.filter((_: unknown, i: number) => i !== index))}><Trash2 className="size-4" aria-hidden="true" /></Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+        {fieldState.invalid && !fieldState.error?.message && <p className="text-sm text-destructive">Controlla i dati degli ingredienti prima di continuare.</p>}
+      </Card>
+      <FormMessage />
+    </FormItem>
+  )} />
+);
